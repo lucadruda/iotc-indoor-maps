@@ -14,6 +14,7 @@ A comprehensive learning module is available and covers the same aspects faced d
 
 - [Sample Swagger](./swagger.json)
 - [Postman collection](./postman_collection.json)
+- [Autorest](https://github.com/Azure/AutoRest)
 
 ## Resources
 
