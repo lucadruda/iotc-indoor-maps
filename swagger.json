@@ -980,7 +980,11 @@
     },
     "paths": {
         "/apiTokens": {
-            "parameters": [],
+            "parameters": [
+                {
+                    "$ref": "#/parameters/Version"
+                }
+            ],
             "get": {
                 "operationId": "ApiTokens_List",
                 "summary": "Get the list of API tokens in an application. The token value will never be returned for security reasons.",
@@ -996,6 +1000,9 @@
         },
         "/apiTokens/{token_id}": {
             "parameters": [
+                {
+                    "$ref": "#/parameters/Version"
+                },
                 {
                     "in": "path",
                     "name": "token_id",
@@ -1050,7 +1057,11 @@
             }
         },
         "/continuousDataExports": {
-            "parameters": [],
+            "parameters": [
+                {
+                    "$ref": "#/parameters/Version"
+                }
+            ],
             "get": {
                 "deprecated": true,
                 "operationId": "ContinuousDataExports_List",
@@ -1067,6 +1078,9 @@
         },
         "/continuousDataExports/{export_id}": {
             "parameters": [
+                {
+                    "$ref": "#/parameters/Version"
+                },
                 {
                     "in": "path",
                     "name": "export_id",
@@ -1148,7 +1162,11 @@
             }
         },
         "/deviceGroups": {
-            "parameters": [],
+            "parameters": [
+                {
+                    "$ref": "#/parameters/Version"
+                }
+            ],
             "get": {
                 "operationId": "DeviceGroups_List",
                 "summary": "Get the list of device groups in an application.",
@@ -1163,7 +1181,11 @@
             }
         },
         "/devices": {
-            "parameters": [],
+            "parameters": [
+                {
+                    "$ref": "#/parameters/Version"
+                }
+            ],
             "get": {
                 "operationId": "Devices_List",
                 "summary": "Get the list of devices in an application",
@@ -1179,6 +1201,9 @@
         },
         "/devices/{device_id}": {
             "parameters": [
+                {
+                    "$ref": "#/parameters/Version"
+                },
                 {
                     "$ref": "#/parameters/DeviceId"
                 }
@@ -1258,6 +1283,9 @@
         "/devices/{device_id}/attestation": {
             "parameters": [
                 {
+                    "$ref": "#/parameters/Version"
+                },
+                {
                     "$ref": "#/parameters/DeviceId"
                 }
             ],
@@ -1332,6 +1360,9 @@
         "/devices/{device_id}/cloudProperties": {
             "parameters": [
                 {
+                    "$ref": "#/parameters/Version"
+                },
+                {
                     "$ref": "#/parameters/DeviceId"
                 }
             ],
@@ -1403,6 +1434,9 @@
         "/devices/{device_id}/commands/{command_name}": {
             "parameters": [
                 {
+                    "$ref": "#/parameters/Version"
+                },
+                {
                     "$ref": "#/parameters/DeviceId"
                 },
                 {
@@ -1448,6 +1482,9 @@
         },
         "/devices/{device_id}/components/{component_name}/commands/{command_name}": {
             "parameters": [
+                {
+                    "$ref": "#/parameters/Version"
+                },
                 {
                     "$ref": "#/parameters/DeviceId"
                 },
@@ -1498,6 +1535,9 @@
         "/devices/{device_id}/modules/{module_name}/commands/{command_name}": {
             "parameters": [
                 {
+                    "$ref": "#/parameters/Version"
+                },
+                {
                     "$ref": "#/parameters/DeviceId"
                 },
                 {
@@ -1546,6 +1586,9 @@
         },
         "/devices/{device_id}/modules/{module_name}/components/{component_name}/commands/{command_name}": {
             "parameters": [
+                {
+                    "$ref": "#/parameters/Version"
+                },
                 {
                     "$ref": "#/parameters/DeviceId"
                 },
@@ -1599,6 +1642,9 @@
         "/devices/{device_id}/credentials": {
             "parameters": [
                 {
+                    "$ref": "#/parameters/Version"
+                },
+                {
                     "$ref": "#/parameters/DeviceId"
                 }
             ],
@@ -1617,6 +1663,9 @@
         },
         "/devices/{device_id}/properties": {
             "parameters": [
+                {
+                    "$ref": "#/parameters/Version"
+                },
                 {
                     "$ref": "#/parameters/DeviceId"
                 }
@@ -1686,6 +1735,9 @@
         "/devices/{device_id}/components/{component_name}/properties": {
             "parameters": [
                 {
+                    "$ref": "#/parameters/Version"
+                },
+                {
                     "$ref": "#/parameters/DeviceId"
                 },
                 {
@@ -1753,6 +1805,9 @@
         },
         "/devices/{device_id}/modules/{module_name}/properties": {
             "parameters": [
+                {
+                    "$ref": "#/parameters/Version"
+                },
                 {
                     "$ref": "#/parameters/DeviceId"
                 },
@@ -1825,6 +1880,9 @@
         "/devices/{device_id}/modules/{module_name}/components/{component_name}/properties": {
             "parameters": [
                 {
+                    "$ref": "#/parameters/Version"
+                },
+                {
                     "$ref": "#/parameters/DeviceId"
                 },
                 {
@@ -1896,6 +1954,9 @@
         "/devices/{device_id}/components": {
             "parameters": [
                 {
+                    "$ref": "#/parameters/Version"
+                },
+                {
                     "$ref": "#/parameters/DeviceId"
                 }
             ],
@@ -1915,6 +1976,9 @@
         "/devices/{device_id}/modules": {
             "parameters": [
                 {
+                    "$ref": "#/parameters/Version"
+                },
+                {
                     "$ref": "#/parameters/DeviceId"
                 }
             ],
@@ -1933,6 +1997,9 @@
         },
         "/devices/{device_id}/modules/{module_name}/components": {
             "parameters": [
+                {
+                    "$ref": "#/parameters/Version"
+                },
                 {
                     "$ref": "#/parameters/DeviceId"
                 },
@@ -1956,6 +2023,9 @@
         "/devices/{device_id}/components/{component_name}": {
             "parameters": [
                 {
+                    "$ref": "#/parameters/Version"
+                },
+                {
                     "$ref": "#/parameters/DeviceId"
                 },
                 {
@@ -1978,6 +2048,9 @@
         "/devices/{device_id}/modules/{module_name}": {
             "parameters": [
                 {
+                    "$ref": "#/parameters/Version"
+                },
+                {
                     "$ref": "#/parameters/DeviceId"
                 },
                 {
@@ -1999,6 +2072,9 @@
         },
         "/devices/{device_id}/modules/{module_name}/components/{component_name}": {
             "parameters": [
+                {
+                    "$ref": "#/parameters/Version"
+                },
                 {
                     "$ref": "#/parameters/DeviceId"
                 },
@@ -2025,6 +2101,9 @@
         "/devices/{device_id}/telemetry/{telemetry_name}": {
             "parameters": [
                 {
+                    "$ref": "#/parameters/Version"
+                },
+                {
                     "$ref": "#/parameters/DeviceId"
                 },
                 {
@@ -2047,6 +2126,9 @@
         },
         "/devices/{device_id}/components/{component_name}/telemetry/{telemetry_name}": {
             "parameters": [
+                {
+                    "$ref": "#/parameters/Version"
+                },
                 {
                     "$ref": "#/parameters/DeviceId"
                 },
@@ -2074,6 +2156,9 @@
         "/devices/{device_id}/modules/{module_name}/telemetry/{telemetry_name}": {
             "parameters": [
                 {
+                    "$ref": "#/parameters/Version"
+                },
+                {
                     "$ref": "#/parameters/DeviceId"
                 },
                 {
@@ -2099,6 +2184,9 @@
         },
         "/devices/{device_id}/modules/{module_name}/components/{component_name}/telemetry/{telemetry_name}": {
             "parameters": [
+                {
+                    "$ref": "#/parameters/Version"
+                },
                 {
                     "$ref": "#/parameters/DeviceId"
                 },
@@ -2127,7 +2215,11 @@
             }
         },
         "/deviceTemplates": {
-            "parameters": [],
+            "parameters": [
+                {
+                    "$ref": "#/parameters/Version"
+                }
+            ],
             "get": {
                 "operationId": "DeviceTemplates_List",
                 "summary": "Get the list of device templates in an application",
@@ -2143,6 +2235,9 @@
         },
         "/deviceTemplates/{device_template_id}": {
             "parameters": [
+                {
+                    "$ref": "#/parameters/Version"
+                },
                 {
                     "$ref": "#/parameters/DeviceTemplateId"
                 }
@@ -2219,6 +2314,9 @@
         "/deviceTemplates/{device_template_id}/merged": {
             "parameters": [
                 {
+                    "$ref": "#/parameters/Version"
+                },
+                {
                     "$ref": "#/parameters/DeviceTemplateId"
                 }
             ],
@@ -2239,6 +2337,9 @@
         "/deviceTemplates/{device_template_id}/devices": {
             "parameters": [
                 {
+                    "$ref": "#/parameters/Version"
+                },
+                {
                     "$ref": "#/parameters/DeviceTemplateId"
                 }
             ],
@@ -2256,7 +2357,11 @@
             }
         },
         "/jobs": {
-            "parameters": [],
+            "parameters": [
+                {
+                    "$ref": "#/parameters/Version"
+                }
+            ],
             "get": {
                 "operationId": "Jobs_List",
                 "summary": "Get the list of jobs in an application",
@@ -2272,6 +2377,9 @@
         },
         "/jobs/{job_id}": {
             "parameters": [
+                {
+                    "$ref": "#/parameters/Version"
+                },
                 {
                     "$ref": "#/parameters/JobId"
                 }
@@ -2317,6 +2425,9 @@
         "/jobs/{job_id}/devices": {
             "parameters": [
                 {
+                    "$ref": "#/parameters/Version"
+                },
+                {
                     "$ref": "#/parameters/JobId"
                 }
             ],
@@ -2336,6 +2447,9 @@
         },
         "/jobs/{job_id}/rerun/{rerun_id}": {
             "parameters": [
+                {
+                    "$ref": "#/parameters/Version"
+                },
                 {
                     "$ref": "#/parameters/JobId"
                 },
@@ -2364,6 +2478,9 @@
         "/jobs/{job_id}/stop": {
             "parameters": [
                 {
+                    "$ref": "#/parameters/Version"
+                },
+                {
                     "$ref": "#/parameters/JobId"
                 }
             ],
@@ -2381,6 +2498,9 @@
         "/jobs/{job_id}/resume": {
             "parameters": [
                 {
+                    "$ref": "#/parameters/Version"
+                },
+                {
                     "$ref": "#/parameters/JobId"
                 }
             ],
@@ -2396,7 +2516,11 @@
             }
         },
         "/roles": {
-            "parameters": [],
+            "parameters": [
+                {
+                    "$ref": "#/parameters/Version"
+                }
+            ],
             "get": {
                 "operationId": "Roles_List",
                 "summary": "Get the list of roles in an application.",
@@ -2412,6 +2536,9 @@
         },
         "/roles/{role_id}": {
             "parameters": [
+                {
+                    "$ref": "#/parameters/Version"
+                },
                 {
                     "in": "path",
                     "name": "role_id",
@@ -2434,7 +2561,11 @@
             }
         },
         "/users": {
-            "parameters": [],
+            "parameters": [
+                {
+                    "$ref": "#/parameters/Version"
+                }
+            ],
             "get": {
                 "operationId": "Users_List",
                 "summary": "Get the list of users in an application",
@@ -2450,6 +2581,9 @@
         },
         "/users/{user_id}": {
             "parameters": [
+                {
+                    "$ref": "#/parameters/Version"
+                },
                 {
                     "in": "path",
                     "name": "user_id",
@@ -2527,5 +2661,5 @@
             }
         }
     },
-    "host": "testappluca-m3.azureiotcentral.com"
+    "host": "ubsworkshop0428.azureiotcentral.com"
 }
