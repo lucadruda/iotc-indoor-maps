@@ -19,3 +19,6 @@ A comprehensive learning module is available and covers the same aspects faced d
 
 - [IoT-for-All](https://github.com/iot-for-all): Home of various samples, tools and technical docs for Azure IoT Central
 - [Azure IoT Java SDK](https://github.com/Azure/azure-iot-sdk-java): official Azure IoT Java client and service SDK
+- [Azure IoT Central client](https://github.com/lucadruda/iotc-java-device-client): unofficial device client for Azure IoT Central written in Java
+- [IoT Central Device Bridge](https://github.com/Azure/iotc-device-bridge)
+- [IoT Central Device Bridge - v2](https://github.com/iot-for-all/iotc-device-bridge)
