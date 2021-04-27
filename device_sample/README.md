@@ -1,5 +1,13 @@
 # Azure IoT Central Device Sample for Java
 
+## Prerequisites
+1. Create an IoT Central application. [Learn more](https://docs.microsoft.com/en-us/azure/iot-central/core/quick-deploy-iot-central)
+2. Create a device template. [Learn more](https://docs.microsoft.com/en-us/azure/iot-central/core/quick-create-simulated-device#create-a-device-template)
+3. Get device connection details.
+More information on connecting real devices can be forun [here.](https://docs.microsoft.com/en-us/azure/iot-central/core/tutorial-connect-device?pivots=programming-language-java)
+
+
+## Setup
 1. Install "Maven". Follow instruction at [https://maven.apache.org/install.html](https://maven.apache.org/install.html)
 2. Setup sample: replace below values in App.java
 ```java
@@ -18,7 +26,9 @@ If using device specific key, set enrollment group to "null" and assign the key 
 ```shell
 mvn compile
 ```
-4. Execute sample (press Q+enter to exit)
+
+## Run
+Execute sample (press Q+enter to exit)
 ```shell
 mvn exec:exec
 ```
