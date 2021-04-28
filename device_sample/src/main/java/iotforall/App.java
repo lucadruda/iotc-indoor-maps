@@ -28,13 +28,9 @@ public class App {
   public static final String ANSI_CYAN = "\u001B[36m";
   public static final String ANSI_WHITE = "\u001B[37m";
   // Device settings - FILL IN YOUR VALUES HERE
-  // private static final String SCOPE_ID = "<Put your scope id here from IoT Central Administration -> Device connection>";
-  // private static final String ENROLLMENT_GROUP_SYMMETRIC_KEY = "<Put your group SAS primary key here from IoT Central Administration -> Device Connection -> SAS-IoT-Devices>";
-  // private static final String DEVICE_SYMMETRIC_KEY = null;
-  private static final String SCOPE_ID = "0ne0029DB1E";
-  private static final String ENROLLMENT_GROUP_SYMMETRIC_KEY = null;
-  private static final String DEVICE_SYMMETRIC_KEY =
-    "L9zabq7hq0Vovd79WzsmzPJX7oBPwO1TSGxOyFlebSc=";
+  private static final String SCOPE_ID = "<Put your scope id here from IoT Central Administration -> Device connection>";
+  private static final String ENROLLMENT_GROUP_SYMMETRIC_KEY = "<Put your group SAS primary key here from IoT Central Administration -> Device Connection -> SAS-IoT-Devices>";
+  private static final String DEVICE_SYMMETRIC_KEY = null;
 
   // Optional device settings - CHANGE IF DESIRED/NECESSARY
   private static final String GLOBAL_ENDPOINT =
