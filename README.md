@@ -16,6 +16,9 @@ A comprehensive learning module is available and covers the same aspects faced d
 - [Postman collection](./postman_collection.json)
 - [Autorest](https://github.com/Azure/AutoRest)
 
+
+## Azure Devops
+- [Programmatic access to IoT Central](https://github.com/quervernetzt/azure-resource-management) through Azure Devops resources.
 ## Resources
 
 - [IoT-for-All](https://github.com/iot-for-all): Home of various samples, tools and technical docs for Azure IoT Central
