@@ -1,0 +1,29 @@
+<html>
+
+<head>
+    <link rel="stylesheet" href="https://atlas.microsoft.com/sdk/javascript/indoor/0.1/atlas-indoor.min.css"
+        type="text/css" />
+    <script src="https://atlas.microsoft.com/sdk/javascript/indoor/0.1/atlas-indoor.min.js"></script>
+    <script>
+        const subscriptionKey = "lR1ByZj_gPUI-joGKchxrimkIzrms0CoMO_bvEmOCtM";
+
+        const map = new atlas.Map("map-id", {
+            //use your facility's location
+            center: [-122.13203, 47.63645],
+            //or, you can use bounds: [# west, # south, # east, # north] and replace # with your map's bounds
+            style: "blank",
+            view: 'Auto',
+            authOptions: {
+                authType: 'subscriptionKey',
+                subscriptionKey: subscriptionKey
+            },
+            zoom: 19,
+        });</script>
+</head>
+
+<body>
+    <h1>Hello world</h1>
+
+</body>
+
+</html>
