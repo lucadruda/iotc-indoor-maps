@@ -1,0 +1,10 @@
+{
+    "azureFunctions.deploySubpath": "map_fn",
+    "azureFunctions.postDeployTask": "npm install (functions)",
+    "azureFunctions.projectLanguage": "TypeScript",
+    "azureFunctions.projectRuntime": "~3",
+    "debug.internalConsoleOptions": "neverOpen",
+    "azureFunctions.preDeployTask": "npm prune (functions)",
+    "appService.defaultWebAppToDeploy": "/subscriptions/479b3e1f-a2af-4b91-b118-02a43df6d293/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Web/sites/ubs-map",
+    "appService.deploySubpath": "map-react\\build"
+}

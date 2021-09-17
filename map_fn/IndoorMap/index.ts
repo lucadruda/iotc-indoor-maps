@@ -5,8 +5,12 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
     if (req.method === 'GET') {
         // page requested
         context.res = {
-            body: await fs.readFile('./public/index.html')
+            body: await fs.readFile('./dist/IndoorMap/public/index.html')
         }
+        return;
+    }
+    if (req.method === 'POST') {
+
     }
     context.log('HTTP trigger function processed a request.');
     const name = (req.query.name || (req.body && req.body.name));

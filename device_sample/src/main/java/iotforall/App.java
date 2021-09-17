@@ -28,15 +28,16 @@ public class App {
   public static final String ANSI_CYAN = "\u001B[36m";
   public static final String ANSI_WHITE = "\u001B[37m";
   // Device settings - FILL IN YOUR VALUES HERE
-  private static final String SCOPE_ID = "<Put your scope id here from IoT Central Administration -> Device connection>";
-  private static final String ENROLLMENT_GROUP_SYMMETRIC_KEY = "<Put your group SAS primary key here from IoT Central Administration -> Device Connection -> SAS-IoT-Devices>";
+  private static final String SCOPE_ID = "0ne0029EF65";
+  private static final String ENROLLMENT_GROUP_SYMMETRIC_KEY =
+    "ZDQHUjpAJZAWs19GPef/MW/NZApOD9uatOXQDHX33O27bleg+NSfTrJn4Pf3ymsq+q+weWXRIDXZVMKfc+WGuA==";
   private static final String DEVICE_SYMMETRIC_KEY = null;
 
   // Optional device settings - CHANGE IF DESIRED/NECESSARY
   private static final String GLOBAL_ENDPOINT =
     "global.azure-devices-provisioning.net";
   private static final String PROVISIONED_DEVICE_ID = "dev01";
-  private static final String MODEL_ID = "dtmi:Sample:Custom;1";
+  private static final String MODEL_ID = "dtmi:Sample:Custom;2";
 
   // Use MQTT for the transport protocol
   private static final ProvisioningDeviceClientTransportProtocol PROVISIONING_DEVICE_CLIENT_TRANSPORT_PROTOCOL =
@@ -286,7 +287,8 @@ public class App {
   private static void sendTelemetry() {
     if (connected && !terminate) {
       String payload = String.format(
-        "{\"temp\": %.2f, \"humidity\": %.2f}",
+        "{\"temp\": %.2f, \"humidity\": %.2f,\"pressure\": %.2f}",
+        Math.random() * 100,
         Math.random() * 100,
         Math.random() * 100
       );

@@ -7,7 +7,7 @@
     "watch": "tsc -w",
     "prestart": "npm run build",
     "start": "func start",
-    "copy-files": "copyfiles ./IndoorMap/public/* ./dist/IndoorMap/public",
+    "copy-files": "copyfiles -u 1 ./IndoorMap/public/* ./dist/IndoorMap",
     "test": "echo \"No tests yet...\""
   },
   "dependencies": {},
