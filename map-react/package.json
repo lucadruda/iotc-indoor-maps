@@ -8,8 +8,10 @@
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
+    "axios": "^0.22.0",
     "azure-maps-control": "^2.1.5",
     "azure-maps-indoor": "^0.1.6",
+    "lodash": "^4.17.21",
     "react": "^17.0.2",
     "react-azure-maps": "^0.3.0",
     "react-dom": "^17.0.2",
@@ -41,6 +43,7 @@
     ]
   },
   "devDependencies": {
+    "@types/lodash": "^4.14.175",
     "@types/node": "^16.9.2",
     "@types/react": "^17.0.21",
     "typescript": "^4.4.3"

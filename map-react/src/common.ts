@@ -1,55 +1,65 @@
 import { useCallback, useReducer } from "react";
 
-export const subscriptionKey = "lR1ByZj_gPUI-joGKchxrimkIzrms0CoMO_bvEmOCtM";
-export const tilesetId = "b5881c4b-2149-a364-7e15-5ee2f339e26b";
-export const statesetId = "7c8723aa-3501-cf02-5728-b1e607b0ab5e";
+export const subscriptionKey = "aipGMyZjmHtjPnOTGTCbWQawlMoQ6MOwVLN2QFpa4fw";
+export const tilesetIds = [
+  "0d76d5d2-36fc-1aaa-d511-0302eb3e4bc4",
+  "b89f4509-e318-3860-0c5f-4aa85571d7ad",
+];
+export const statesetId = "15368145-028a-e2a2-25f8-c72ed2825874";
 
-enum CalloutActionType {
-    OPEN = 'OPEN',
-    DISMISS = 'DISMISS'
+enum CardActionType {
+  OPEN = "OPEN",
+  DISMISS = "DISMISS",
 }
-type CalloutActions = {
-    type: CalloutActionType,
-    payload?: Partial<CalloutState>
-}
-type CalloutState = {
-    id: string | null,
-    data: any | null,
-    event: MouseEvent | null,
-    show: boolean
-}
-type CalloutItems = {
-    open: (id: string, data: any, event: MouseEvent) => void
-    dismiss: () => void,
-    state: CalloutState
+type CardActions = {
+  type: CardActionType;
+  payload?: Partial<CardState>;
+};
+type CardState = {
+  id: string | null;
+  data: any | null;
+  pagePosition: [number, number] | null;
+  show: boolean;
+};
+type CardItems = {
+  open: (id: string, data: any, pagePosition: [number, number]) => void;
+  dismiss: () => void;
+  state: CardState;
+};
 
-}
-
-export function useCallout(): CalloutItems {
-    const reducer = (state: CalloutState, action: CalloutActions) => {
-        switch (action.type) {
-            case CalloutActionType.OPEN:
-                return { ...state, ...action.payload, show: true }
-            case CalloutActionType.DISMISS:
-                return { ...state, id: null, data: null, event: null, show: false }
-            default:
-                return state;
-        }
+export function useCard(): CardItems {
+  const reducer = (state: CardState, action: CardActions) => {
+    switch (action.type) {
+      case CardActionType.OPEN:
+        return { ...state, ...action.payload, show: true };
+      case CardActionType.DISMISS:
+        return { ...state, id: null, data: null, event: null, show: false };
+      default:
+        return state;
     }
+  };
 
-    const [state, dispatch] = useReducer(reducer, { id: null, data: null, event: null, show: false });
+  const [state, dispatch] = useReducer(reducer, {
+    id: null,
+    data: null,
+    pagePosition: null,
+    show: false,
+  });
 
-    const open = useCallback((id: string, data: any, event: MouseEvent) => {
-        dispatch({
-            type: CalloutActionType.OPEN,
-            payload: { id, data, event }
-        });
-    }, [dispatch]);
+  const open = useCallback(
+    (id: string, data: any, pagePosition: [number, number]) => {
+      dispatch({
+        type: CardActionType.OPEN,
+        payload: { id, data, pagePosition },
+      });
+    },
+    [dispatch]
+  );
 
-    const dismiss = useCallback(() => {
-        dispatch({
-            type: CalloutActionType.DISMISS
-        })
-    }, []);
-    return { open, dismiss, state }
+  const dismiss = useCallback(() => {
+    dispatch({
+      type: CardActionType.DISMISS,
+    });
+  }, []);
+  return { open, dismiss, state };
 }
