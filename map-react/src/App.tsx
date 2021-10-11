@@ -2,20 +2,20 @@ import React, { useCallback, useMemo, useRef, useState } from "react";
 import "./App.css";
 import { indoor, control } from "azure-maps-indoor";
 import * as atlas from "azure-maps-control";
-import { isEqual } from "lodash";
+import { isEqual, map } from "lodash";
 import { useEffect } from "react";
 import {
   FontWeights,
   mergeStyleSets,
   Text,
-  Link,
+  List,
   Stack,
   HoverCard,
   IExpandingCardProps,
   DirectionalHint,
 } from "@fluentui/react";
 import { useId } from "@fluentui/react-hooks";
-import { statesetId, subscriptionKey, tilesetIds, useCard } from "./common";
+import { getRandomPosition, statesetId, subscriptionKey, tilesetIds, useCard } from "./common";
 // import { occupyRoom, reserveRoom } from "./map";
 import TvIcon from "./icons/tv.png";
 import ThermostatIcon from "./icons/thermostat.png";
@@ -60,14 +60,31 @@ const App = React.memo(() => {
     },
   });
 
+  const onMouseOver = useCallback((map, event, layer) => {
+    const features = map.layers.getRenderedShapes(
+      event.position,
+      layer
+    );
+    features.forEach((feature: any) => {
+      openCard(feature.data.properties.featureId, feature.data, [
+        atlas.Pixel.getX(event.pixel!) - 10,
+        atlas.Pixel.getY(event.pixel!) - 10,
+      ]);
+      popupRef.current?.focus();
+    });
+  }, [openCard]);
+
   useEffect(() => {
     (async () => {
       setFeatures(await getFeatures(null));
     })();
-  }, [setFeatures]);
+  }, [setFeatures, setDevices]);
 
   useEffect(() => {
     const inId = setInterval(async () => {
+      if (features.length === 0) {
+        return;
+      }
       const devs = await getDevices();
       if (isEqual(devs, devices)) {
         return;
@@ -82,20 +99,10 @@ const App = React.memo(() => {
                 parseInt(feature.properties.name) === tv.properties?.room
             );
             if (feature) {
-              const position = [
-                Math.random() *
-                  (feature.geometry.coordinates[0][0][0] -
-                    feature.geometry.coordinates[0][1][0]) +
-                  feature.geometry.coordinates[0][0][0],
-                Math.random() *
-                  (feature.geometry.coordinates[0][0][1] -
-                    feature.geometry.coordinates[0][1][1]) +
-                  feature.geometry.coordinates[0][0][1],
-              ];
-
+              console.log(getRandomPosition(feature));
               tvDataSource.add(
                 new atlas.data.Feature<atlas.data.Geometry, TVProperties>(
-                  new atlas.data.Point(position),
+                  new atlas.data.Point(getRandomPosition(feature)),
                   {
                     name: tv.displayName,
                     ipaddress: tv.properties?.ipAddress ?? null,
@@ -115,21 +122,11 @@ const App = React.memo(() => {
                 parseInt(feature.properties.name) === thm.properties?.room
             );
             if (feature) {
-              const position = [
-                Math.random() *
-                  (feature.geometry.coordinates[0][0][0] -
-                    feature.geometry.coordinates[0][1][0]) +
-                  feature.geometry.coordinates[0][0][0],
-                Math.random() *
-                  (feature.geometry.coordinates[0][0][1] -
-                    feature.geometry.coordinates[0][1][1]) +
-                  feature.geometry.coordinates[0][0][1],
-              ];
               thermostatDataSource.add(
                 new atlas.data.Feature<
                   atlas.data.Geometry,
                   ThermostatProperties
-                >(new atlas.data.Point(position), {
+                >(new atlas.data.Point(getRandomPosition(feature)), {
                   name: thm.displayName,
                   targetTemperature: thm.properties?.targetTemperature ?? null,
                   maxTempSinceLastReboot:
@@ -229,40 +226,28 @@ const App = React.memo(() => {
 
       indoorMap.layers.add(tvsLayer);
       indoorMap.layers.add(thmsLayer);
-      indoorMap.events.add("mouseover", tvsLayer, (e) => {
-        const features = indoorMap.layers.getRenderedShapes(
-          e.position,
-          tvsLayer
-        );
-        features.forEach((feature: any) => {
-          openCard(feature.data.properties.featureId, feature.data, [
-            atlas.Pixel.getX(e.pixel!) - 10,
-            atlas.Pixel.getY(e.pixel!) - 10,
-          ]);
-          popupRef.current?.focus();
-        });
-      });
+      indoorMap.events.add("mouseover", tvsLayer, (e) => onMouseOver(indoorMap, e, tvsLayer));
+      indoorMap.events.add("mouseover", thmsLayer, (e) => onMouseOver(indoorMap, e, thmsLayer));
     });
-  }, [features, openCard, tvDataSource, thermostatDataSource]);
+  }, [features, onMouseOver, tvDataSource, thermostatDataSource]);
+
+  const onRenderListItem = useCallback((item?: { key: string, value: any }, index?: number) => (
+    <div style={{ display: 'flex' }}>
+      <Text variant='xLarge'>{item?.key}</Text>
+      <Text>{item?.value}</Text>
+    </div>
+  ), []);
 
   const onRenderExpandedCard = useCallback((): JSX.Element => {
+    const items = map(cardState.data.properties, (value, key) => ({ key, value }));
     return (
       <Stack
         className={classNames.expandedCard}
         horizontal
         tokens={{ childrenGap: 40 }}
       >
-        <Text>
-          IP Address:{" "}
-          <Link
-            target="_blank"
-            onClick={() =>
-              window.open(`http://${cardState.data.properties.ipaddress}`)
-            }
-          >
-            {cardState.data.properties.ipaddress}
-          </Link>
-        </Text>
+
+        <List items={items} onRenderCell={onRenderListItem} />
         {/* {!cardState.data.state["stateValue:occupied"] && (
           <Link
             onClick={() => {
@@ -295,7 +280,7 @@ const App = React.memo(() => {
         </Link> */}
       </Stack>
     );
-  }, [cardState, classNames]);
+  }, [cardState, classNames, onRenderListItem]);
 
   const onRenderCompactCard = useCallback((): JSX.Element => {
     return (
