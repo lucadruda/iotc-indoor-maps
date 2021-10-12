@@ -6,9 +6,8 @@ export const tilesetIds = [
   "0d76d5d2-36fc-1aaa-d511-0302eb3e4bc4",
   "b89f4509-e318-3860-0c5f-4aa85571d7ad",
 ];
-export const statesetId = "15368145-028a-e2a2-25f8-c72ed2825874";
+export const statesetId = "9587d752-caad-37a2-bd2a-a4db8afc0e70";
 type Feature = data.Feature<data.Geometry, any>;
-
 
 enum CardActionType {
   OPEN = "OPEN",
@@ -67,15 +66,10 @@ export function useCard(): CardItems {
   return { open, dismiss, state };
 }
 
-
 export function getRandomPosition(feature: Feature): [number, number] {
   const pos = feature.geometry.coordinates[0] as data.Position[];
-  console.log(pos);
-  return [(Math.random() *
-    (pos[0][0] - pos[2][0])) +
-    pos[2][0],
-  (Math.random() *
-    (pos[0][1] - pos[1][1])) +
-  pos[1][1]
+  return [
+    Math.random() * (pos[0][0] - pos[2][0]) + pos[2][0],
+    Math.random() * (pos[0][1] - pos[1][1]) + pos[1][1],
   ];
 }

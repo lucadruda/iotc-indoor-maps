@@ -63,3 +63,38 @@ export async function getDeviceProperties(deviceId: string) {
   }
   return {};
 }
+
+export async function getTelemetryValue(
+  deviceId: string,
+  telemetryName: string
+) {
+  const res = await axios.get<{
+    value: any;
+  }>(
+    `https://${APP_NAME}.${DOMAIN}/api/devices/${deviceId}/telemetry/${telemetryName}?api-version=${API_VERSION}`,
+    {
+      headers: {
+        Authorization: API_KEY,
+      },
+    }
+  );
+  if ([200, 201].includes(res.status)) {
+    return res.data.value;
+  }
+  return null;
+}
+
+export async function triggerCommand(
+  deviceId: string,
+  commandName: string,
+  commandPayload?: any
+) {
+  const res = await axios.post<{}>(
+    `https://${APP_NAME}.${DOMAIN}/api/devices/${deviceId}/commands/${commandName}?api-version=${API_VERSION}`,
+    commandPayload ?? {}
+  );
+  if ([200, 201].includes(res.status)) {
+    return true;
+  }
+  return null;
+}

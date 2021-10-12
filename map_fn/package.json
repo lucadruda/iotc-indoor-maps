@@ -10,7 +10,9 @@
     "copy-files": "copyfiles -u 1 ./IndoorMap/public/* ./dist/IndoorMap",
     "test": "echo \"No tests yet...\""
   },
-  "dependencies": {},
+  "dependencies": {
+    "axios": "^0.22.0"
+  },
   "devDependencies": {
     "@azure/functions": "^1.2.3",
     "@types/node": "^16.9.1",
