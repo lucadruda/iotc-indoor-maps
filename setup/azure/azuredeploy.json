@@ -1,0 +1,83 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "accountName": {
+            "type": "string",
+            "defaultValue": "[uniqueString(resourceGroup().id)]",
+            "metadata": {
+                "description": "The name for your Azure Maps account. This value must be globally unique."
+            }
+        },
+        "pricingTier": {
+            "type": "string",
+            "allowedValues": [
+                "S0",
+                "S1",
+                "G2"
+            ],
+            "defaultValue": "G2",
+            "metadata": {
+                "description": "The pricing tier for the account. Use S0 for small-scale development. Use S1 or G2 for large-scale applications."
+            }
+        },
+        "kind": {
+            "type": "string",
+            "allowedValues": [
+                "Gen1",
+                "Gen2"
+            ],
+            "defaultValue": "Gen2",
+            "metadata": {
+                "description": "The pricing tier for the account. Use Gen1 for small-scale development. Use Gen2 for large-scale applications."
+            }
+        }
+    },
+    "resources": [
+        {
+            "name": "[parameters('accountName')]",
+            "type": "Microsoft.Maps/accounts",
+            "apiVersion": "2021-02-01",
+            "location": "global",
+            "sku": {
+                "name": "[parameters('pricingTier')]"
+            },
+            "kind": "[parameters('kind')]",
+            "resources": [
+                {
+                    "type": "creators",
+                    "apiVersion": "2021-02-01",
+                    "properties": {
+                        "storageUnits": 1
+                    },
+                    "name": "ubs-maps-creator",
+                    "location": "[if(contains(resourceGroup().location,'eur'),'westeurope','eastus2')]",
+                    "dependsOn": [ "[resourceId('Microsoft.Maps/accounts', parameters('accountName'))]" ]
+                }
+            ]
+        }
+    ],
+    "outputs": {
+        "subscriptionId": {
+            "value": "[subscription().subscriptionId]",
+            "type": "string"
+        },
+        "resourceId": {
+            "value": "[resourceId('Microsoft.Maps/accounts',parameters('accountName'))]",
+            "type": "string"
+        },
+        "tenantId": {
+            "value": "[subscription().tenantId]",
+            "type": "string"
+        },
+        "location": {
+            "value": "[if(contains(resourceGroup().location,'eur'),'eu','us')]",
+            "type": "string"
+        },
+        "mapSubscriptionKeys": {
+            "value": "[listKeys(concat('Microsoft.Maps/accounts/',parameters('accountName')),'2021-02-01')]",
+            "type": "object"
+        }
+
+    }
+}
