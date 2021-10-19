@@ -1,11 +1,4 @@
-import {
-  Button,
-  List,
-  mergeStyleSets,
-  PrimaryButton,
-  Stack,
-  Text,
-} from "@fluentui/react";
+import { List, mergeStyleSets, PrimaryButton, Text } from "@fluentui/react";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { getTelemetryValue, triggerCommand } from "./central";
 import { TVProperties } from "./types";
@@ -78,8 +71,6 @@ export const TvCard = React.memo<CardProps>(({ data }) => {
     ],
     [currentPower, properties]
   );
-
-  const power = useCallback(async (poweredOn: boolean) => {}, []);
 
   return (
     <div className={classNames.expandedCard}>

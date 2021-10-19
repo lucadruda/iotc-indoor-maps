@@ -1,11 +1,10 @@
 import axios from "axios";
 import { Device, IoTCDevice } from "./types";
 
-const APP_NAME = "ubsmap";
+const APP_NAME = process.env["IOTC_APP_SUBDOMAIN"];
 const DOMAIN = "azureiotcentral.com";
 const API_VERSION = "1.0";
-const API_KEY =
-  "SharedAccessSignature sr=3a5279fe-8817-4181-af6d-27323aa9e6d1&sig=RP1WYdta%2F8kFSHZ3pf7Cu2Gruoa07Gp2ye8rBwpYhmY%3D&skn=API&se=1665043186510";
+const API_KEY = process.env["IOTC_API_KEY"] || "";
 const TV_MODEL = "dtmi:modelDefinition:ndexursjf:eie12urydm";
 const THM_MODEL = "dtmi:modelDefinition:frfn3tauo:xwmfyixfc5";
 

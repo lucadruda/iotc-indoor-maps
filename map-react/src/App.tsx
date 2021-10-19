@@ -84,7 +84,7 @@ const App = React.memo(() => {
         popupRef.current?.focus();
       });
     },
-    [openCard]
+    [openCard, tvDataSource]
   );
 
   const refresh = useCallback(async () => {
@@ -242,10 +242,6 @@ const App = React.memo(() => {
       /** Initialize features */
       indoorMap.events.add("load", (e) => {
         try {
-          const features = indoorMap.layers.getRenderedShapes(
-            undefined,
-            "unit"
-          );
           setFeatures(indoorMap.layers.getRenderedShapes(undefined, "unit"));
         } catch (ex) {
           console.log(ex);
@@ -263,7 +259,7 @@ const App = React.memo(() => {
         )}
       </>
     ),
-    [cardState, classNames]
+    [cardState]
   );
 
   const onRenderCompactCard = useCallback((): JSX.Element => {

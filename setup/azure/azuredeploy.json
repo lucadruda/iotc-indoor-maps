@@ -46,10 +46,11 @@
         "skucode": "Free",
         "repositoryUrl": "https://github.com/lucadruda/iotc-indoor-maps",
         "repositoryBranch": "indoor_maps",
-        "appLocation": "/",
-        "appArtifactLocation": "map-react",
+        "repositoryToken": "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",
+        "appLocation": "map-react",
+        "outputLocation": "map-react/build",
         "appBuildCommand": "npm run build",
-        "siteName": "[concat('appsvc-',uniqueString(resourceGroup().id))]"
+        "siteName": "[concat('site-',uniqueString(resourceGroup().id))]"
 
     },
     "resources": [
@@ -81,45 +82,33 @@
             "apiVersion": "2020-12-01",
             "name": "[variables('siteName')]",
             "location": "[resourceGroup().location]",
-            "kind": "app,linux",
-            "properties": {
-                "enabled": true,
-                "hostNameSslStates": [
-                    {
-                        "name": "[concat(parameters('websitedomain'), '.azurewebsites.net')]",
-                        "sslState": "Disabled",
-                        "hostType": "Standard"
-                    },
-                    {
-                        "name": "[concat(parameters('websitedomain'), '.scm.azurewebsites.net')]",
-                        "sslState": "Disabled",
-                        "hostType": "Repository"
-                    }
-                ],
-                "repositoryUrl": "[variables('repositoryUrl')]",
-                "branch": "[variables('repositoryBranch')]",
-                "buildProperties": {
-                    "appLocation": "[variables('appLocation')]",
-                    "appBuildCommand": "[variables('appBuildCommand')]",
-                    "appArtifactLocation": "[variables('appArtifactLocation')]"
-                }
-            },
             "sku": {
                 "Tier": "[variables('sku')]",
                 "Name": "[variables('skuCode')]"
             },
+            "kind": "app,linux",
+            "properties": {
+                "repositoryUrl": "[variables('repositoryUrl')]",
+                "repositoryToken": "[variables('repositoryToken')]",
+                "branch": "[variables('repositoryBranch')]",
+                "buildProperties": {
+                    "appLocation": "[variables('appLocation')]",
+                    "appBuildCommand": "[variables('appBuildCommand')]",
+                    "outputLocation": "[variables('outputLocation')]"
+                }
+            },
             "resources": [
                 {
+                    "type": "config",
                     "apiVersion": "2020-12-01",
                     "name": "appsettings",
-                    "type": "config",
                     "location": "[resourceGroup().location]",
-                    "properties": {
-                        "MAP_SUBSCRIPTION_KEY": "[listKeys(concat('Microsoft.Maps/accounts/',parameters('accountName')),'2021-02-01').primaryKey]"
-                    },
                     "dependsOn": [
                         "[resourceId('Microsoft.Web/staticSites', variables('siteName'))]"
-                    ]
+                    ],
+                    "properties": {
+                        "MAP_SUBSCRIPTION_KEY": "[listKeys(concat('Microsoft.Maps/accounts/',parameters('accountName')),'2021-02-01').primaryKey]"
+                    }
                 }
             ],
             "dependsOn": [ "[resourceId('Microsoft.Maps/accounts/creators', variables('mapAccountName'),variables('creatorName'))]" ]
@@ -146,6 +135,10 @@
         "mapSubscriptionKey": {
             "value": "[listKeys(concat('Microsoft.Maps/accounts/',parameters('accountName')),'2021-02-01').primaryKey]",
             "type": "string"
+        },
+        "mapSite":{
+            "type": "string",
+            "value": "[reference(resourceId('Microsoft.Web/staticSites',variables('siteName')),'2020-12-01').defaultHostname]"
         }
     }
 }
