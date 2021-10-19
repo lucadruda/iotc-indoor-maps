@@ -9,6 +9,12 @@
                 "description": "The name for your Azure Maps account. This value must be globally unique."
             }
         },
+        "websitedomain": {
+            "type": "string",
+            "metadata": {
+                "description": "The domain name for the website. <domain>.azurewebsites.net"
+            }
+        },
         "pricingTier": {
             "type": "string",
             "allowedValues": [
@@ -33,9 +39,22 @@
             }
         }
     },
+    "variables": {
+        "mapAccountName": "[parameters('accountName')]",
+        "creatorName": "[concat(variables('mapAccountName'),'-creator')]",
+        "sku": "Free",
+        "skucode": "Free",
+        "repositoryUrl": "https://github.com/lucadruda/iotc-indoor-maps",
+        "repositoryBranch": "indoor_maps",
+        "appLocation": "/",
+        "appArtifactLocation": "map-react",
+        "appBuildCommand": "npm run build",
+        "siteName": "[concat('appsvc-',uniqueString(resourceGroup().id))]"
+
+    },
     "resources": [
         {
-            "name": "[parameters('accountName')]",
+            "name": "[variables('mapAccountName')]",
             "type": "Microsoft.Maps/accounts",
             "apiVersion": "2021-02-01",
             "location": "global",
@@ -43,6 +62,7 @@
                 "name": "[parameters('pricingTier')]"
             },
             "kind": "[parameters('kind')]",
+            "properties": {},
             "resources": [
                 {
                     "type": "creators",
@@ -50,12 +70,61 @@
                     "properties": {
                         "storageUnits": 1
                     },
-                    "name": "ubs-maps-creator",
+                    "name": "[variables('creatorName')]",
                     "location": "[if(contains(resourceGroup().location,'eur'),'westeurope','eastus2')]",
-                    "dependsOn": [ "[resourceId('Microsoft.Maps/accounts', parameters('accountName'))]" ]
+                    "dependsOn": [ "[resourceId('Microsoft.Maps/accounts', variables('mapAccountName'))]" ]
                 }
             ]
+        },
+        {
+            "type": "Microsoft.Web/staticSites",
+            "apiVersion": "2020-12-01",
+            "name": "[variables('siteName')]",
+            "location": "[resourceGroup().location]",
+            "kind": "app,linux",
+            "properties": {
+                "enabled": true,
+                "hostNameSslStates": [
+                    {
+                        "name": "[concat(parameters('websitedomain'), '.azurewebsites.net')]",
+                        "sslState": "Disabled",
+                        "hostType": "Standard"
+                    },
+                    {
+                        "name": "[concat(parameters('websitedomain'), '.scm.azurewebsites.net')]",
+                        "sslState": "Disabled",
+                        "hostType": "Repository"
+                    }
+                ],
+                "repositoryUrl": "[variables('repositoryUrl')]",
+                "branch": "[variables('repositoryBranch')]",
+                "buildProperties": {
+                    "appLocation": "[variables('appLocation')]",
+                    "appBuildCommand": "[variables('appBuildCommand')]",
+                    "appArtifactLocation": "[variables('appArtifactLocation')]"
+                }
+            },
+            "sku": {
+                "Tier": "[variables('sku')]",
+                "Name": "[variables('skuCode')]"
+            },
+            "resources": [
+                {
+                    "apiVersion": "2020-12-01",
+                    "name": "appsettings",
+                    "type": "config",
+                    "location": "[resourceGroup().location]",
+                    "properties": {
+                        "MAP_SUBSCRIPTION_KEY": "[listKeys(concat('Microsoft.Maps/accounts/',parameters('accountName')),'2021-02-01').primaryKey]"
+                    },
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Web/staticSites', variables('siteName'))]"
+                    ]
+                }
+            ],
+            "dependsOn": [ "[resourceId('Microsoft.Maps/accounts/creators', variables('mapAccountName'),variables('creatorName'))]" ]
         }
+
     ],
     "outputs": {
         "subscriptionId": {
@@ -74,10 +143,9 @@
             "value": "[if(contains(resourceGroup().location,'eur'),'eu','us')]",
             "type": "string"
         },
-        "mapSubscriptionKeys": {
-            "value": "[listKeys(concat('Microsoft.Maps/accounts/',parameters('accountName')),'2021-02-01')]",
-            "type": "object"
+        "mapSubscriptionKey": {
+            "value": "[listKeys(concat('Microsoft.Maps/accounts/',parameters('accountName')),'2021-02-01').primaryKey]",
+            "type": "string"
         }
-
     }
 }

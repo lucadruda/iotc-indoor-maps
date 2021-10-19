@@ -17,7 +17,7 @@ import {
   getRandomPosition,
   statesetId,
   subscriptionKey,
-  tilesetIds,
+  tilesetId,
   useCard,
 } from "./common";
 // import { occupyRoom, reserveRoom } from "./map";
@@ -172,8 +172,8 @@ const App = React.memo(() => {
 
       const indoorManager = new indoor.IndoorManager(indoorMap, {
         levelControl: levelControl, //level picker
-        tilesetId: tilesetIds[0],
-        statesetId: statesetId, // Optional
+        tilesetId,
+        statesetId,
       });
 
       if (statesetId.length > 0) {

@@ -1,12 +1,9 @@
 import { data } from "azure-maps-control";
 import { useCallback, useReducer } from "react";
 
-export const subscriptionKey = "aipGMyZjmHtjPnOTGTCbWQawlMoQ6MOwVLN2QFpa4fw";
-export const tilesetIds = [
-  "0d76d5d2-36fc-1aaa-d511-0302eb3e4bc4",
-  "b89f4509-e318-3860-0c5f-4aa85571d7ad",
-];
-export const statesetId = "9587d752-caad-37a2-bd2a-a4db8afc0e70";
+export const subscriptionKey = process.env.MAP_SUBSCRIPTION_KEY || "";
+export const tilesetId = process.env.MAP_TILESET_ID || "";
+export const statesetId = process.env.MAP_STATESET_ID || "";
 type Feature = data.Feature<data.Geometry, any>;
 
 enum CardActionType {

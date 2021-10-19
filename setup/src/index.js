@@ -4,7 +4,6 @@ import { initializeIcons } from "@fluentui/font-icons-mdl2";
 import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
-import Upload from "./Upload";
 
 initializeIcons();
 
