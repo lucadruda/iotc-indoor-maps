@@ -47,7 +47,7 @@ const Central = React.memo(
   React.forwardRef<StepElem, StepProps>(({ enableNext }, ref) => {
     const [apps, setApps] = useState<IotCentralModels.App[] | null>(null);
     const [selectedApp, setSelectedApp] = useState<number | null>(null);
-    const { managementCredentials, subscriptionId, store } =
+    const { managementCredentials, subscriptionId, centralDetails, store } =
       useContext(DeploymentContext);
 
     const nextEnabled = useRef(false);
@@ -58,6 +58,14 @@ const Central = React.memo(
       },
       [setApps]
     );
+
+    useEffect(() => {
+      if (apps && centralDetails) {
+        setSelectedApp(
+          apps.findIndex((a) => a.subdomain === centralDetails.appSubdomain)
+        );
+      }
+    }, [apps, centralDetails]);
 
     useEffect(() => {
       if (managementCredentials) {
@@ -90,7 +98,7 @@ const Central = React.memo(
           }
         },
       }),
-      [managementCredentials, apps, selectedApp,store]
+      [managementCredentials, apps, selectedApp, store]
     );
 
     const onRenderCell = React.useCallback(

@@ -6,6 +6,7 @@ import Upload from "./steps/Upload";
 import DeploymentProvider from "./deploymentContext";
 import Configure from "./steps/Configure";
 import Central from "./steps/Central";
+import Site from "./steps/Site";
 
 const styles = {
   wizardBody: {
@@ -41,7 +42,7 @@ const App = React.memo(() => {
 });
 
 export function Wizard() {
-  const [current, next, previous] = useSteps(3);
+  const [current, next, previous] = useSteps(4);
   const [nextEnabled, setNextEnabled] = useState(false);
   const totalSteps = 5;
 
@@ -70,6 +71,10 @@ export function Wizard() {
       case 3:
         return (
           <Central ref={compRef[3]} enableNext={() => setNextEnabled(true)} />
+        );
+      case 4:
+        return (
+          <Site ref={compRef[4]} enableNext={() => setNextEnabled(true)} />
         );
       default:
         return null;

@@ -325,7 +325,14 @@ export async function createStaticApp(
   location: string,
   variables: string
 ) {
-  const client = new WebSiteManagementClient(credentials, subscriptionId);
+  const creds = await login(
+    "4ac2d501-d648-4bd0-8486-653a65f90fc7",
+    subscriptionId
+  );
+  console.log(
+    await creds.getToken("https://management.azure.com/user_impersonation")
+  );
+  const client = new WebSiteManagementClient(creds, subscriptionId);
   const site = await client.staticSites.createOrUpdateStaticSite(
     RESOURCE_GROUP,
     "indoor-map-site",
@@ -333,11 +340,11 @@ export async function createStaticApp(
       location,
       sku: { name: "Free" },
       repositoryUrl: "https://github.com/lucadruda/iotc-indoor-maps",
-      repositoryToken: "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",
+      repositoryToken: "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",
       branch: "indoor_maps",
       buildProperties: {
         appLocation: "map_react",
-        outputLocation: "map_react/build",
+        outputLocation: "build",
         appBuildCommand: `${variables} npm run build`,
       },
     }
