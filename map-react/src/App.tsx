@@ -11,15 +11,10 @@ import {
   HoverCard,
   IExpandingCardProps,
   DirectionalHint,
+  Link,
 } from "@fluentui/react";
 import { useId } from "@fluentui/react-hooks";
-import {
-  getRandomPosition,
-  statesetId,
-  subscriptionKey,
-  tilesetId,
-  useCard,
-} from "./common";
+import { getRandomPosition, useCard } from "./common";
 // import { occupyRoom, reserveRoom } from "./map";
 import TvIcon from "./icons/tv.png";
 import ThermostatIcon from "./icons/thermostat.png";
@@ -30,6 +25,13 @@ import { ThermostatCard, TvCard } from "./Cards";
 const mapId = "map-id";
 
 const App = React.memo(() => {
+  const subscriptionKey =
+    process.env.REACT_MAP_SUBSCRIPTION_KEY ||
+    "aipGMyZjmHtjPnOTGTCbWQawlMoQ6MOwVLN2QFpa4fw";
+  const tilesetId =
+    process.env.REACT_MAP_TILESET_ID || "0d76d5d2-36fc-1aaa-d511-0302eb3e4bc4";
+  const statesetId =
+    process.env.REACT_MAP_STATESET_ID || "9587d752-caad-37a2-bd2a-a4db8afc0e70";
   const { state: cardState, open: openCard } = useCard();
   const [devices, setDevices] = useState({});
   const { current: tvDataSource } = useRef<atlas.source.DataSource>(
@@ -64,6 +66,9 @@ const App = React.memo(() => {
           cursor: "pointer",
         },
       },
+    },
+    cardIcon: {
+      width: 40,
     },
   });
 
@@ -248,7 +253,15 @@ const App = React.memo(() => {
         }
       });
     });
-  }, [setFeatures, onMouseOver, tvDataSource, thermostatDataSource]);
+  }, [
+    setFeatures,
+    onMouseOver,
+    tvDataSource,
+    thermostatDataSource,
+    statesetId,
+    subscriptionKey,
+    tilesetId,
+  ]);
 
   const onRenderExpandedCard = useCallback(
     (): JSX.Element => (
@@ -265,6 +278,10 @@ const App = React.memo(() => {
   const onRenderCompactCard = useCallback((): JSX.Element => {
     return (
       <div className={classNames.compactCard}>
+        <img
+          src={cardState.data.template === "tv" ? TvIcon : ThermostatIcon}
+          className={classNames.cardIcon}
+        />
         <Text block variant="xLarge" className={styles.title} id={labelId}>
           {cardState.data.properties.name}
         </Text>
@@ -288,7 +305,7 @@ const App = React.memo(() => {
     }),
     [onRenderCompactCard, onRenderExpandedCard]
   );
-
+  console.log(tilesetId);
   return (
     <div className="App">
       <div id={mapId}></div>

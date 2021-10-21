@@ -1,11 +1,18 @@
-import { List, mergeStyleSets, PrimaryButton, Text } from "@fluentui/react";
+import {
+  List,
+  mergeStyleSets,
+  PrimaryButton,
+  Text,
+  TextField,
+} from "@fluentui/react";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { getTelemetryValue, triggerCommand } from "./central";
-import { TVProperties } from "./types";
+import { getTelemetryValue, setProperty, triggerCommand } from "./central";
+import { ThermostatProperties, TVProperties } from "./types";
 
 type CardProps = {
   data: any;
 };
+type CardItem = { key: string; value: any; onEdit?: (val: any) => void };
 
 const classNames = mergeStyleSets({
   compactCard: {
@@ -26,6 +33,7 @@ const classNames = mergeStyleSets({
   item: {
     display: "flex",
     justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 10,
     selectors: {
       "&:hover": {
@@ -36,13 +44,21 @@ const classNames = mergeStyleSets({
   },
 });
 
-const onRenderListItem = (
-  item?: { key: string; value: any },
-  index?: number
-) => (
+const onRenderListItem = (item?: CardItem, index?: number) => (
   <div className={classNames.item}>
     <Text style={{ fontWeight: 600 }}>{item?.key}</Text>
-    <Text>{item?.value}</Text>
+    {item?.onEdit ? (
+      <TextField
+        type="number"
+        style={{ width: 60 }}
+        value={item.value}
+        onChange={(e, val) => {
+          item?.onEdit?.(val);
+        }}
+      />
+    ) : (
+      <Text>{item?.value}</Text>
+    )}
   </div>
 );
 
@@ -97,4 +113,55 @@ export const TvCard = React.memo<CardProps>(({ data }) => {
     </div>
   );
 });
-export const ThermostatCard = React.memo<CardProps>(() => null);
+export const ThermostatCard = React.memo<CardProps>(({ data }) => {
+  const [currentTemperature, setCurrentTemperature] = useState(null);
+  const [targetTemperature, setTargetTemperature] = useState(0);
+  const { properties }: { properties: ThermostatProperties } = data;
+
+  const fetchTelemetry = useCallback(async () => {
+    setCurrentTemperature(
+      await getTelemetryValue(data.properties.id, "temperature")
+    );
+  }, [setCurrentTemperature, data.properties.id]);
+
+  useEffect(() => {
+    fetchTelemetry();
+  }, [fetchTelemetry]);
+
+  const items = useMemo<CardItem[]>(
+    () => [
+      {
+        key: "Temperature",
+        value: currentTemperature ? `${currentTemperature} °C` : "-",
+      },
+      {
+        key: "Target Temperature",
+        value: targetTemperature,
+        onEdit: (val) => {
+          setTargetTemperature(parseInt(val));
+        },
+      },
+    ],
+    [currentTemperature, targetTemperature]
+  );
+
+  return (
+    <div className={classNames.expandedCard}>
+      <List
+        className={classNames.list}
+        items={items}
+        onRenderCell={onRenderListItem}
+      />
+      <PrimaryButton
+        text="Set Temperature"
+        onClick={async () => {
+          await setProperty(
+            properties.id,
+            "targetTemperature",
+            targetTemperature
+          );
+        }}
+      />
+    </div>
+  );
+});

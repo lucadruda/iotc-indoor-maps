@@ -2,10 +2,8 @@ from iotc import IOTCConnectType, IOTCEvents, Storage, CredentialsCache
 from iotc.aio import IoTCClient
 import asyncio
 from json import loads, dumps
-from sys import argv, exit
+from sys import argv
 from random import randint
-
-from iotc.models import Command
 
 
 class FileStorage(Storage):
@@ -14,10 +12,10 @@ class FileStorage(Storage):
 
     def retrieve(self):
         f = open("creds.json", "r")
-        self._creds: dict = loads(f.read())
+        self._creds = loads(f.read())
         if self._id in self._creds:
             print("Retrieved credentials")
-            return CredentialsCache.from_dict(self._creds.get(self._id))
+            return CredentialsCache.from_dict(self._creds[self._id])
         return None
 
     def persist(self, credentials: CredentialsCache):
@@ -33,6 +31,8 @@ class FileStorage(Storage):
 
 async def main():
     id = argv[1]
+    global temperature
+    temperature = 25
     client = IoTCClient(
         id,
         "0ne003B752D",
@@ -41,20 +41,21 @@ async def main():
         storage=FileStorage(id),
     )
 
-    async def on_commands(command: Command):
-        await command.reply()
-        if command.name == "powerOff":
-            await client.send_telemetry({"powerState": 0})
-            exit(0)
+    async def on_props(prop_name, prop_value, comp_name):
+        global temperature
+        if prop_name == "targetTemperature":
+            print(f"Received new temperature {prop_value}.")
+            temperature = prop_value
+        return True
 
-    client.on(IOTCEvents.IOTC_COMMAND, on_commands)
+    client.on(IOTCEvents.IOTC_PROPERTIES, on_props)
 
     await client.connect()
     print("Client connected")
-    await client.send_property({"ipAddress": f"192.168.1.{randint(1,254)}"})
+    # await client.send_property({"ipAddress": f"192.168.1.{randint(1,254)}"})
     while client.is_connected():
-        await client.send_telemetry({"powerState": 1})
-        await asyncio.sleep(20)
+        await client.send_telemetry({"temperature": temperature})
+        await asyncio.sleep(10)
 
 
 asyncio.run(main())

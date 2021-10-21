@@ -1,21 +1,16 @@
-import {
-  DefaultButton,
-  Icon,
-  List,
-  mergeStyleSets,
-  ProgressIndicator,
-} from "@fluentui/react";
+import { Icon, mergeStyleSets, ProgressIndicator } from "@fluentui/react";
 import React, {
   useCallback,
   useContext,
   useEffect,
+  useImperativeHandle,
   useRef,
   useState,
 } from "react";
 import { useDropzone } from "react-dropzone";
 import { uploadPackage } from "../api";
 import { DeploymentContext } from "../deploymentContext";
-import { formatBytes, StepProps } from "../hooks";
+import { formatBytes, StepElem, StepProps } from "../hooks";
 
 const classNames = mergeStyleSets({
   listGrid: {
@@ -55,10 +50,11 @@ type UploadData = {
   uuid?: string;
 };
 
-const Upload = React.memo<StepProps>(
-  ({ visible, enableNext, submit, resetSubmit }) => {
+const Upload = React.memo(
+  React.forwardRef<StepElem, StepProps>(({ enableNext }, ref) => {
     const [items, setItems] = useState<(UploadData | null)[]>([null]);
-    const { mapSubscriptionKey, store } = useContext(DeploymentContext);
+    const { mapSubscriptionKey, store, managementCredentials } =
+      useContext(DeploymentContext);
 
     const nextEnabled = useRef(false);
 
@@ -104,22 +100,25 @@ const Upload = React.memo<StepProps>(
       [setItems, mapSubscriptionKey]
     );
 
-    const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    const { getRootProps, getInputProps } = useDropzone({
       onDrop: uploadFn,
       maxFiles: 1,
       accept: ".zip",
     });
 
-    useEffect(() => {
-      if (submit) {
-        resetSubmit();
-        store({
-          drawingUUIDs: items
-            .filter((i) => i?.uuid)
-            .map((i) => i?.uuid) as string[],
-        });
-      }
-    }, [submit, resetSubmit, store, items]);
+    useImperativeHandle(
+      ref,
+      () => ({
+        process: () => {
+          store({
+            drawingUUIDs: items
+              .filter((i) => i?.uuid)
+              .map((i) => i?.uuid) as string[],
+          });
+        },
+      }),
+      [store, items]
+    );
 
     useEffect(() => {
       if (items.length > 1 && !nextEnabled.current) {
@@ -167,14 +166,11 @@ const Upload = React.memo<StepProps>(
       [getInputProps, getRootProps]
     );
 
-    if (!visible) {
-      return null;
-    }
-    if (!mapSubscriptionKey) {
+    if (!mapSubscriptionKey || !managementCredentials) {
       return <div>loading</div>;
     }
     return <div className={classNames.listGrid}>{items.map(onRenderCell)}</div>;
-  }
+  })
 );
 
 export default Upload;

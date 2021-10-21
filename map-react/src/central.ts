@@ -1,10 +1,6 @@
 import axios from "axios";
 import { Device, IoTCDevice } from "./types";
-
-const APP_NAME = process.env["IOTC_APP_SUBDOMAIN"];
-const DOMAIN = "azureiotcentral.com";
-const API_VERSION = "1.0";
-const API_KEY = process.env["IOTC_API_KEY"] || "";
+import { API_KEY, API_VERSION, APP_NAME, DOMAIN } from "./common";
 const TV_MODEL = "dtmi:modelDefinition:ndexursjf:eie12urydm";
 const THM_MODEL = "dtmi:modelDefinition:frfn3tauo:xwmfyixfc5";
 
@@ -90,7 +86,32 @@ export async function triggerCommand(
 ) {
   const res = await axios.post<{}>(
     `https://${APP_NAME}.${DOMAIN}/api/devices/${deviceId}/commands/${commandName}?api-version=${API_VERSION}`,
-    commandPayload ?? {}
+    commandPayload ?? {},
+    {
+      headers: {
+        Authorization: API_KEY,
+      },
+    }
+  );
+  if ([200, 201].includes(res.status)) {
+    return true;
+  }
+  return null;
+}
+
+export async function setProperty(
+  deviceId: string,
+  propertyName: string,
+  propertyValue: any
+) {
+  const res = await axios.patch<{}>(
+    `https://${APP_NAME}.${DOMAIN}/api/devices/${deviceId}/properties?api-version=${API_VERSION}`,
+    { [propertyName]: propertyValue },
+    {
+      headers: {
+        Authorization: API_KEY,
+      },
+    }
   );
   if ([200, 201].includes(res.status)) {
     return true;

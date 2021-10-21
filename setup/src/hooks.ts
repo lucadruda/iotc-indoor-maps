@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import { useCallback, useState } from "react";
 
 export function useSteps(start?: number): [number, () => void, () => void] {
   const [current, setCurrent] = useState<number>(start || 0);
@@ -46,8 +46,23 @@ export function useSubmit(init: boolean) {
 }
 
 export type StepProps = {
-  visible: boolean;
-  submit: boolean;
-  resetSubmit: () => void;
+  // visible: boolean;
+  // submit: boolean;
+  // resetSubmit: () => void;
   enableNext: () => void;
 };
+
+export type StepElem = {
+  process: () => void | Promise<void>;
+};
+
+export function useStorage() {
+  const read = useCallback((item: string) => {
+    return localStorage.getItem(item);
+  }, []);
+
+  const write = useCallback((item: string, value: string) => {
+    return localStorage.setItem(item, value);
+  }, []);
+  return { read, write };
+}

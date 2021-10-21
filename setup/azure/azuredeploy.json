@@ -49,7 +49,6 @@
         "repositoryToken": "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",
         "appLocation": "map-react",
         "outputLocation": "map-react/build",
-        "appBuildCommand": "npm run build",
         "siteName": "[concat('site-',uniqueString(resourceGroup().id))]"
 
     },
@@ -76,44 +75,7 @@
                     "dependsOn": [ "[resourceId('Microsoft.Maps/accounts', variables('mapAccountName'))]" ]
                 }
             ]
-        },
-        {
-            "type": "Microsoft.Web/staticSites",
-            "apiVersion": "2020-12-01",
-            "name": "[variables('siteName')]",
-            "location": "[resourceGroup().location]",
-            "sku": {
-                "Tier": "[variables('sku')]",
-                "Name": "[variables('skuCode')]"
-            },
-            "kind": "app,linux",
-            "properties": {
-                "repositoryUrl": "[variables('repositoryUrl')]",
-                "repositoryToken": "[variables('repositoryToken')]",
-                "branch": "[variables('repositoryBranch')]",
-                "buildProperties": {
-                    "appLocation": "[variables('appLocation')]",
-                    "appBuildCommand": "[variables('appBuildCommand')]",
-                    "outputLocation": "[variables('outputLocation')]"
-                }
-            },
-            "resources": [
-                {
-                    "type": "config",
-                    "apiVersion": "2020-12-01",
-                    "name": "appsettings",
-                    "location": "[resourceGroup().location]",
-                    "dependsOn": [
-                        "[resourceId('Microsoft.Web/staticSites', variables('siteName'))]"
-                    ],
-                    "properties": {
-                        "MAP_SUBSCRIPTION_KEY": "[listKeys(concat('Microsoft.Maps/accounts/',parameters('accountName')),'2021-02-01').primaryKey]"
-                    }
-                }
-            ],
-            "dependsOn": [ "[resourceId('Microsoft.Maps/accounts/creators', variables('mapAccountName'),variables('creatorName'))]" ]
         }
-
     ],
     "outputs": {
         "subscriptionId": {
@@ -135,10 +97,6 @@
         "mapSubscriptionKey": {
             "value": "[listKeys(concat('Microsoft.Maps/accounts/',parameters('accountName')),'2021-02-01').primaryKey]",
             "type": "string"
-        },
-        "mapSite":{
-            "type": "string",
-            "value": "[reference(resourceId('Microsoft.Web/staticSites',variables('siteName')),'2020-12-01').defaultHostname]"
         }
     }
 }

@@ -1,10 +1,11 @@
 import { FontIcon, mergeStyleSets } from "@fluentui/react";
-import React, { useState } from "react";
-import { useSteps, useSubmit } from "./hooks";
+import React, { useRef, useState } from "react";
+import { StepElem, useSteps } from "./hooks";
 import Deploy from "./steps/Deploy";
 import Upload from "./steps/Upload";
 import DeploymentProvider from "./deploymentContext";
 import Configure from "./steps/Configure";
+import Central from "./steps/Central";
 
 const styles = {
   wizardBody: {
@@ -15,9 +16,8 @@ const styles = {
   footer: {
     position: "absolute",
     bottom: "5%",
-    display: "flex",
-    justifyContent: "space-evenly",
-    width: "100%",
+    justifyContent: "space-between",
+    width: "70%",
   },
   arrow: {
     alignItems: "center",
@@ -41,58 +41,75 @@ const App = React.memo(() => {
 });
 
 export function Wizard() {
-  const [current, next, previous] = useSteps(0);
+  const [current, next, previous] = useSteps(3);
   const [nextEnabled, setNextEnabled] = useState(false);
-  const submit = useSubmit(false);
-  const totalSteps = 3;
+  const totalSteps = 5;
+
+  const compRef = [
+    useRef<StepElem>(null),
+    useRef<StepElem>(null),
+    useRef<StepElem>(null),
+    useRef<StepElem>(null),
+    useRef<StepElem>(null),
+  ];
+
+  const renderComponent = (step: number) => {
+    switch (step) {
+      case 0:
+        return (
+          <Deploy ref={compRef[0]} enableNext={() => setNextEnabled(true)} />
+        );
+      case 1:
+        return (
+          <Upload ref={compRef[1]} enableNext={() => setNextEnabled(true)} />
+        );
+      case 2:
+        return (
+          <Configure ref={compRef[2]} enableNext={() => setNextEnabled(true)} />
+        );
+      case 3:
+        return (
+          <Central ref={compRef[3]} enableNext={() => setNextEnabled(true)} />
+        );
+      default:
+        return null;
+    }
+  };
 
   return (
     <div className={classNames.wizardBody}>
-      <Deploy
-        visible={current === 0}
-        enableNext={() => setNextEnabled(true)}
-        submit={submit.submitting && current === 1}
-        resetSubmit={submit.reset}
-      />
-      <Upload
-        visible={current === 1}
-        enableNext={() => setNextEnabled(true)}
-        submit={submit.submitting && current === 2}
-        resetSubmit={submit.reset}
-      />
-       <Configure
-        visible={current === 2}
-        enableNext={() => setNextEnabled(true)}
-        submit={submit.submitting && current === 3}
-        resetSubmit={submit.reset}
-      />
+      {renderComponent(current)}
       <div className={classNames.footer}>
         <div
           className={classNames.arrow}
           style={{
-            display: current === 0 ? "none" : "flex",
+            ...(current === 0 ? { display: "none" } : {}),
+            float: "left",
           }}
         >
-          <p>Previous</p>
           <FontIcon
             iconName="Back"
             onClick={previous}
             className={classNames.icon}
           />
+          <p>Previous</p>
         </div>
         <div
           className={classNames.arrow}
           style={{
-            display:
-              current === totalSteps - 1 || !nextEnabled ? "none" : "flex",
+            ...(current === totalSteps - 1 || !nextEnabled
+              ? { display: "none" }
+              : {}),
+            float: "right",
           }}
         >
           <p>Next</p>
           <FontIcon
             iconName="Forward"
             onClick={() => {
+              compRef[current].current?.process();
               next();
-              submit.set();
+              setNextEnabled(false);
             }}
             className={classNames.icon}
           />

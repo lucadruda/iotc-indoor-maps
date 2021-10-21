@@ -1,5 +1,5 @@
-import { statesetId, subscriptionKey } from "./common";
 import axios from "axios";
+import { MAP_STATESET_ID, MAP_SUBSCRIPTION_KEY } from "./common";
 const GEOGRAPHY = "us";
 const API_VERSION = "2.0";
 const DATASET_ID = "ecb0f4ee-d07f-1b58-3ea2-3601c8b91a5e";
@@ -13,9 +13,9 @@ export async function getFeatures(
     features = [];
   }
   if (!url) {
-    url = `https://${GEOGRAPHY}.atlas.microsoft.com/wfs/datasets/${DATASET_ID}/collections/${COLLECTION_ID}/items?subscription-key=${subscriptionKey}&api-version=${API_VERSION}`;
+    url = `https://${GEOGRAPHY}.atlas.microsoft.com/wfs/datasets/${DATASET_ID}/collections/${COLLECTION_ID}/items?subscription-key=${MAP_SUBSCRIPTION_KEY}&api-version=${API_VERSION}`;
   } else {
-    url += `&subscription-key=${subscriptionKey}`;
+    url += `&subscription-key=${MAP_SUBSCRIPTION_KEY}`;
   }
   const res = await axios.get<any>(url);
   if (res.status === 200) {
@@ -30,7 +30,7 @@ export async function getFeatures(
 
 export async function reserveRoom(roomId: string, free: boolean = false) {
   const res = await fetch(
-    `https://${GEOGRAPHY}.atlas.microsoft.com/featurestatesets/${statesetId}/featureStates/${roomId}?subscription-key=${subscriptionKey}&api-version=${API_VERSION}`,
+    `https://${GEOGRAPHY}.atlas.microsoft.com/featurestatesets/${MAP_STATESET_ID}/featureStates/${roomId}?subscription-key=${MAP_SUBSCRIPTION_KEY}&api-version=${API_VERSION}`,
     {
       method: "PUT",
       headers: {
@@ -55,7 +55,7 @@ export async function reserveRoom(roomId: string, free: boolean = false) {
 
 export async function occupyRoom(roomId: string, free: boolean = false) {
   const res = await fetch(
-    `https://${GEOGRAPHY}.atlas.microsoft.com/featurestatesets/${statesetId}/featureStates/${roomId}?subscription-key=${subscriptionKey}&api-version=${API_VERSION}`,
+    `https://${GEOGRAPHY}.atlas.microsoft.com/featurestatesets/${MAP_STATESET_ID}/featureStates/${roomId}?subscription-key=${MAP_SUBSCRIPTION_KEY}&api-version=${API_VERSION}`,
     {
       method: "PUT",
       headers: {

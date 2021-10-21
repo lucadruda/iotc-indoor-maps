@@ -1,11 +1,14 @@
 import { AzureMapsManagementClient } from "@azure/arm-maps";
 import { InteractiveBrowserCredential } from "@azure/identity";
 import { ResourceManagementClient } from "@azure/arm-resources";
+import { WebSiteManagementClient } from "@azure/arm-appservice";
 import axios, { AxiosResponse } from "axios";
+import { IotCentralClient } from "@azure/arm-iotcentral";
 
-const RESOURCE_GROUP = "iotc-indoor-maps";
+const RESOURCE_GROUP = "lucamaps";
 const ACCOUNT_NAME = "iim-account";
 const API_VERSION = "2.0";
+const IOTC_API_VERSION = "1.0";
 
 // const client = new AzureMapsManagementClient(credential, SUBSCRIPTION_ID);
 
@@ -40,8 +43,52 @@ export async function login(tenantId: string, subscriptionId: string) {
     tenantId,
   });
 
-  const client = new AzureMapsManagementClient(credential, subscriptionId);
-  return client;
+  return credential;
+}
+
+export async function listCentralApps(
+  credentials: InteractiveBrowserCredential,
+  subscriptionId: string
+) {
+  const client = new IotCentralClient(credentials, subscriptionId);
+  return client.apps.listBySubscription();
+}
+
+export async function createCentralApiToken(
+  credentials: InteractiveBrowserCredential,
+  appSubDomain: string
+): Promise<string | null> {
+  const bearer = await credentials.getToken(
+    "https://apps.azureiotcentral.com/user_impersonation"
+  );
+  const tokenId = `iotc-indm-${Math.floor(Math.random() * 20000)}`;
+  const res = await axios.put<{
+    id: string;
+    roles: {
+      role: string;
+    }[];
+    expiry: string;
+    token: string;
+  }>(
+    `https://${appSubDomain}.azureiotcentral.com/api/apiTokens/${tokenId}?api-version=${IOTC_API_VERSION}`,
+    {
+      roles: [
+        {
+          role: "ca310b8d-2f4a-44e0-a36e-957c202cd8d4",
+        },
+      ],
+      expiry: "2023-12-31T23:59:00.000Z",
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${bearer.token}`,
+      },
+    }
+  );
+  if (res.status === 200) {
+    return res.data.token;
+  }
+  return null;
 }
 
 export async function uploadPackage(
@@ -270,4 +317,33 @@ async function waitForSuccess(
       }
     }, 5000);
   });
+}
+
+export async function createStaticApp(
+  credentials: InteractiveBrowserCredential,
+  subscriptionId: string,
+  location: string,
+  variables: string
+) {
+  const client = new WebSiteManagementClient(credentials, subscriptionId);
+  const site = await client.staticSites.createOrUpdateStaticSite(
+    RESOURCE_GROUP,
+    "indoor-map-site",
+    {
+      location,
+      sku: { name: "Free" },
+      repositoryUrl: "https://github.com/lucadruda/iotc-indoor-maps",
+      repositoryToken: "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",
+      branch: "indoor_maps",
+      buildProperties: {
+        appLocation: "map_react",
+        outputLocation: "map_react/build",
+        appBuildCommand: `${variables} npm run build`,
+      },
+    }
+  );
+  if (site) {
+    return site.defaultHostname;
+  }
+  return null;
 }
