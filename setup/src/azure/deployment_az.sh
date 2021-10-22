@@ -4,7 +4,7 @@ git clone "$GIT_REPO"
 
 cd ${GIT_REPO##*/}
 
-if [[ -z $GIT_BRANCH ]]
+if [[ ! -z $GIT_BRANCH ]]
 then
     git checkout "$GIT_BRANCH"
 fi
