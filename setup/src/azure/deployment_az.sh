@@ -16,5 +16,3 @@ npm run build
 az storage blob service-properties update --account-name "$STORAGE_ACCOUNT_NAME" --static-website --404-document error.html --index-document index.html
 az storage blob upload-batch --account-name "$STORAGE_ACCOUNT_NAME" -d "\$web" -s build
 
-# Get web endpoint
-echo "{\"webEndpoint\":`az storage account show --name "$STORAGE_ACCOUNT_NAME" | jq .primaryEndpoints.web`}" > $AZ_SCRIPTS_OUTPUT_PATH
