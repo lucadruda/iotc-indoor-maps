@@ -7,7 +7,7 @@ import {
   createTileset,
 } from "../api";
 import { DeploymentContext } from "../deploymentContext";
-import { StepElem, StepProps } from "../hooks";
+import { StepElem, StepProps } from "../common";
 
 const classNames = mergeStyleSets({
   content: {

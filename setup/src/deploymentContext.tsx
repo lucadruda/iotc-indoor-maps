@@ -4,29 +4,14 @@
 import { InteractiveBrowserCredential } from "@azure/identity";
 import React, { useCallback, useEffect, useState } from "react";
 import { login } from "./api";
-import { useStorage } from "./hooks";
+import { DeploymentParameters, IoTCentralParameters, MapParameters, useStorage } from "./common";
 
-type IDeploymentState = {
-  subscriptionId: string | null;
-  tenantId: string | null;
-  mapSubscriptionKey: string | null;
-  drawingUUIDs: string[] | null;
-  tileSetId: string | null;
-  statesetId: string | null;
-  managementCredentials: InteractiveBrowserCredential | null;
-  centralDetails: { appSubdomain: string; apiKey: string } | null;
+type IDeploymentState = DeploymentParameters & MapParameters & {
+  managementCredentials?: InteractiveBrowserCredential;
+  centralDetails?: IoTCentralParameters;
 };
 
-const initialState: IDeploymentState = {
-  subscriptionId: "2efa8bb6-25bf-4895-ba64-33806dd00780",
-  tenantId: "4ac2d501-d648-4bd0-8486-653a65f90fc7",
-  mapSubscriptionKey: null,
-  drawingUUIDs: null,
-  tileSetId: null,
-  statesetId: null,
-  managementCredentials: null,
-  centralDetails: null,
-};
+const initialState: IDeploymentState = {};
 
 export type IDeploymentContext = IDeploymentState & {
   store: (data: Partial<IDeploymentState>) => void;

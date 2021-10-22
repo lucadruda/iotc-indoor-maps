@@ -1,0 +1,177 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "gitRepo": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the git repository containing the website code."
+            }
+        },
+        "gitBranch": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "The name of the git repository branch containing the website code if different from default"
+            }
+        },
+        "siteFolder": {
+            "type": "string",
+            "metadata": {
+                "description": "The website folder in the git repository"
+            }
+        },
+        "scriptUri": {
+            "type": "string",
+            "metadata": {
+                "description": "Url of the deployment script"
+            }
+        },
+        "mapSubscriptionKey": {
+            "type": "string",
+            "metadata": {
+                "description": "The azure map subscription key"
+            }
+        },
+        "mapTilesetId": {
+            "type": "string",
+            "metadata": {
+                "description": "The map tileset Id"
+            }
+        },
+        "mapStatesetId": {
+            "type": "string",
+            "metadata": {
+                "description": "The map stateset Id"
+
+            }
+        },
+        "iotcApiKey": {
+            "type": "string",
+            "metadata": {
+                "description": "The IoTCentral Api Key"
+
+            }
+        },
+        "iotcSubdomain": {
+            "type": "string",
+            "metadata": {
+                "description": "The IoTCentral App subdomain"
+
+            }
+        }
+
+
+    },
+    "variables": {
+        "storageContributorId": "17d1049b-9a84-46fb-8f53-869881c3d3ab",
+        "storageName": "[concat('iotcindsa',uniqueString(resourceGroup().id))]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2021-04-01",
+            "name": "[variables('storageName')]",
+            "location": "[resourceGroup().id]",
+            "kind": "StorageV2",
+            "sku": {
+                "name": "Standard_LRS"
+            }
+        },
+        {
+            "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
+            "apiVersion": "2018-11-30",
+            "name": "DeploymentScript",
+            "location": "[resourceGroup().location]"
+        },
+        {
+            "type": "Microsoft.Authorization/roleAssignments",
+            "apiVersion": "2020-04-01-preview",
+            "scope": "[format('Microsoft.Storage/storageAccounts/{0}', variables('storageName'))]",
+            "name": "[guid(resourceGroup().id, resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', 'DeploymentScript'), subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('storageContributorId')))]",
+            "properties": {
+                "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('storageContributorId'))]",
+                "principalId": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', 'DeploymentScript')).principalId]",
+                "principalType": "ServicePrincipal"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', 'DeploymentScript')]",
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageName'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Resources/deploymentScripts",
+            "apiVersion": "2020-10-01",
+            "name": "deploymentScript",
+            "location": "[resourceGroup().location]",
+            "kind": "AzureCLI",
+            "identity": {
+                "type": "UserAssigned",
+                "userAssignedIdentities": {
+                    "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', 'DeploymentScript')]": {}
+                }
+            },
+            "properties": {
+                "primaryScriptUri": "[parameters('scriptUri')]",
+                "storageAccountSettings": {
+                    "storageAccountName": "[variables('storageName')]",
+                    "storageAccountKey": "[listKeys(resourceId('Microsoft.Storage/storageAccounts',variables('storageName')),'2021-04-01').keys[0].value]"
+                },
+                "retentionInterval": "PT4H",
+                "environmentVariables": [
+                    {
+                        "name": "ResourceGroupName",
+                        "value": "[resourceGroup().name]"
+                    },
+                    {
+                        "name": "StorageAccountName",
+                        "value": "[variables('storageName')]"
+                    },
+                    {
+                        "name": "GIT_REPO",
+                        "value": "[parameters('gitRepo')]"
+                    },
+                    {
+                        "name": "GIT_BRANCH",
+                        "value": "[parameters('gitBranch')]"
+                    },
+                    {
+                        "name": "SITE_FOLDER",
+                        "value": "[parameters('siteFolder')]"
+                    },
+                    {
+                        "name": "REACT_APP_MAP_SUBSCRIPTION_KEY",
+                        "value": "[parameters('mapSubscriptionKey')]"
+                    },
+                    {
+                        "name": "REACT_APP_MAP_TILESET_ID",
+                        "value": "[parameters('mapTilesetId')]"
+                    },
+                    {
+                        "name": "REACT_APP_MAP_STATESET_ID",
+                        "value": "[parameters('mapStatesetId')]"
+                    },
+                    {
+                        "name": "REACT_APP_IOTC_API_KEY",
+                        "value": "[parameters('iotcApiKey')]"
+                    },
+                    {
+                        "name": "REACT_APP_IOTC_APP_SUBDOMAIN",
+                        "value": "[parameters('iotcSubdomain')]"
+                    }
+                ]
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', 'DeploymentScript')]",
+                "[extensionResourceId(resourceId('Microsoft.Storage/storageAccounts', variables('storageName')), 'Microsoft.Authorization/roleAssignments', guid(resourceGroup().id, resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', 'DeploymentScript'), subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('storageContributorId'))))]",
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageName'))]"
+            ]
+        }
+    ],
+    "outputs": {
+        "staticWebsiteUrl": {
+            "type": "string",
+            "value": "[reference(resourceId('Microsoft.Storage/storageAccounts',variables('storageName'))).primaryEndpoints.web]"
+        }
+    }
+}

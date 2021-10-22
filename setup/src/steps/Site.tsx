@@ -2,7 +2,7 @@ import { mergeStyleSets, ProgressIndicator } from "@fluentui/react";
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { createStaticApp } from "../api";
 import { DeploymentContext } from "../deploymentContext";
-import { StepElem, StepProps } from "../hooks";
+import { StepElem, StepProps } from "../common";
 
 const classNames = mergeStyleSets({
   content: {
@@ -28,29 +28,23 @@ const Site = React.memo(
       label: "Creating web site",
       description: "",
     });
-    const { managementCredentials, subscriptionId } =
+    const { managementCredentials, subscriptionId, resourceGroup } =
       useContext(DeploymentContext);
 
     // const nextEnabled = useRef(false);
 
-    const createSite = useCallback(async (credentials, subscriptionId) => {
+    const createSite = useCallback(async (credentials, subscriptionId, resourceGroup) => {
       await createStaticApp(
         credentials,
         subscriptionId,
-        "eastus2",
-        Object.keys(DEPLOYMENT_VARIABLES)
-          .map((k) => {
-            return `${k}=${
-              DEPLOYMENT_VARIABLES[k as keyof typeof DEPLOYMENT_VARIABLES]
-            }`;
-          })
-          .join(" ")
+        resourceGroup,
+        DEPLOYMENT_VARIABLES
       );
     }, []);
 
     useEffect(() => {
       if (managementCredentials && subscriptionId) {
-        createSite(managementCredentials, subscriptionId);
+        createSite(managementCredentials, subscriptionId, resourceGroup);
       }
     }, [createSite, managementCredentials, subscriptionId]);
 

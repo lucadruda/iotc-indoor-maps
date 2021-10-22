@@ -9,12 +9,6 @@
                 "description": "The name for your Azure Maps account. This value must be globally unique."
             }
         },
-        "websitedomain": {
-            "type": "string",
-            "metadata": {
-                "description": "The domain name for the website. <domain>.azurewebsites.net"
-            }
-        },
         "pricingTier": {
             "type": "string",
             "allowedValues": [
@@ -41,16 +35,7 @@
     },
     "variables": {
         "mapAccountName": "[parameters('accountName')]",
-        "creatorName": "[concat(variables('mapAccountName'),'-creator')]",
-        "sku": "Free",
-        "skucode": "Free",
-        "repositoryUrl": "https://github.com/lucadruda/iotc-indoor-maps",
-        "repositoryBranch": "indoor_maps",
-        "repositoryToken": "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",
-        "appLocation": "map-react",
-        "outputLocation": "map-react/build",
-        "siteName": "[concat('site-',uniqueString(resourceGroup().id))]"
-
+        "creatorName": "[concat(variables('mapAccountName'),'-creator')]"
     },
     "resources": [
         {

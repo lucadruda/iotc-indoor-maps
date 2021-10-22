@@ -7,19 +7,20 @@ import React, {
   useState,
 } from "react";
 import { DeploymentContext } from "../deploymentContext";
-import { StepElem, StepProps } from "../hooks";
+import { DeploymentParameters, MapParameters, StepElem, StepProps } from "../common";
 
 const Deploy = React.memo(
   React.forwardRef<StepElem, StepProps>(({ enableNext }, ref) => {
     const { store } = useContext(DeploymentContext);
 
-    const [data, setData] = useState(
+    const [data, setData] = useState<DeploymentParameters & MapParameters>(
       // subscriptionId && tenantId && mapSubscriptionKey
       //   ?
       {
         subscriptionId: "2efa8bb6-25bf-4895-ba64-33806dd00780",
         tenantId: "4ac2d501-d648-4bd0-8486-653a65f90fc7",
         mapSubscriptionKey: "fzIwvA-PX2RNMM0P_9SoCSZHvX3iFD2712Qemctrqwk",
+        resourceGroup: 'lucamaps'
       }
       // : { subscriptionId: "", tenantId: "", mapSubscriptionKey: "" }
     );
@@ -31,7 +32,7 @@ const Deploy = React.memo(
           store(data);
         },
       }),
-      [store,data]
+      [store, data]
     );
     const nextEnabled = useRef(false);
 
@@ -75,6 +76,13 @@ const Deploy = React.memo(
             value={data.tenantId}
             onChange={(e, val) => {
               setData((current) => ({ ...current, tenantId: val! }));
+            }}
+          />
+          <TextField
+            label="Resource Group Name"
+            value={data.resourceGroup}
+            onChange={(e, val) => {
+              setData((current) => ({ ...current, resourceGroup: val! }));
             }}
           />
           <TextField

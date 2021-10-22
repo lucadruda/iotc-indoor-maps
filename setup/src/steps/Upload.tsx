@@ -10,7 +10,7 @@ import React, {
 import { useDropzone } from "react-dropzone";
 import { uploadPackage } from "../api";
 import { DeploymentContext } from "../deploymentContext";
-import { formatBytes, StepElem, StepProps } from "../hooks";
+import { formatBytes, StepElem, StepProps } from "../common";
 
 const classNames = mergeStyleSets({
   listGrid: {

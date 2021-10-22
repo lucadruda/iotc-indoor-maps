@@ -1,9 +1,9 @@
 import { AzureMapsManagementClient } from "@azure/arm-maps";
 import { InteractiveBrowserCredential } from "@azure/identity";
 import { ResourceManagementClient } from "@azure/arm-resources";
-import { WebSiteManagementClient } from "@azure/arm-appservice";
 import axios, { AxiosResponse } from "axios";
 import { IotCentralClient } from "@azure/arm-iotcentral";
+import siteTemplate from './azure/azuredeploy_site.json';
 
 const RESOURCE_GROUP = "lucamaps";
 const ACCOUNT_NAME = "iim-account";
@@ -167,8 +167,7 @@ export async function createOrUpdateDataSet(
   datasetId?: string
 ) {
   const res = await axios.post<any>(
-    `https://${location}.atlas.microsoft.com/datasets?api-version=${API_VERSION}&conversionId=${conversionId}&subscription-key=${subscriptionKey}${
-      datasetId ? `&datasetId=${datasetId}` : ""
+    `https://${location}.atlas.microsoft.com/datasets?api-version=${API_VERSION}&conversionId=${conversionId}&subscription-key=${subscriptionKey}${datasetId ? `&datasetId=${datasetId}` : ""
     }`
   );
   if (res.headers["operation-location"]) {
@@ -322,35 +321,20 @@ async function waitForSuccess(
 export async function createStaticApp(
   credentials: InteractiveBrowserCredential,
   subscriptionId: string,
-  location: string,
-  variables: string
+  resourceGroup: string,
+  parameters: any
 ) {
-  const creds = await login(
-    "4ac2d501-d648-4bd0-8486-653a65f90fc7",
-    subscriptionId
-  );
-  console.log(
-    await creds.getToken("https://management.azure.com/user_impersonation")
-  );
-  const client = new WebSiteManagementClient(creds, subscriptionId);
-  const site = await client.staticSites.createOrUpdateStaticSite(
-    RESOURCE_GROUP,
-    "indoor-map-site",
-    {
-      location,
-      sku: { name: "Free" },
-      repositoryUrl: "https://github.com/lucadruda/iotc-indoor-maps",
-      repositoryToken: "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",
-      branch: "indoor_maps",
-      buildProperties: {
-        appLocation: "map_react",
-        outputLocation: "build",
-        appBuildCommand: `${variables} npm run build`,
-      },
+  const client = new ResourceManagementClient(credentials, subscriptionId);
+  const deployment = await client.deployments.createOrUpdate(resourceGroup, 'staticsite', {
+    properties: {
+      mode: 'Incremental',
+      template: siteTemplate,
+      parameters
     }
-  );
-  if (site) {
-    return site.defaultHostname;
+  });
+  if (deployment.id) {
+    return deployment.id
   }
   return null;
+
 }

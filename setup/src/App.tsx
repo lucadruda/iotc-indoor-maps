@@ -1,6 +1,6 @@
 import { FontIcon, mergeStyleSets } from "@fluentui/react";
 import React, { useRef, useState } from "react";
-import { StepElem, useSteps } from "./hooks";
+import { StepElem, useSteps } from "./common";
 import Deploy from "./steps/Deploy";
 import Upload from "./steps/Upload";
 import DeploymentProvider from "./deploymentContext";

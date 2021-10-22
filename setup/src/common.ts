@@ -1,5 +1,21 @@
 import { useCallback, useState } from "react";
 
+/** -------------------- TYPES --------------------- */
+export type DeploymentParameters = {
+  subscriptionId?: string;
+  tenantId?: string;
+  resourceGroup?: string;
+}
+
+export type MapParameters = {
+  mapSubscriptionKey?: string,
+  drawingUUIDs?: string[],
+  tileSetId?: string,
+  statesetId?: string,
+}
+
+export type IoTCentralParameters = { appSubdomain: string; apiKey: string }
+
 export function useSteps(start?: number): [number, () => void, () => void] {
   const [current, setCurrent] = useState<number>(start || 0);
 

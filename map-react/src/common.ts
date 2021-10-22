@@ -8,6 +8,7 @@ export const API_KEY = process.env["REACT_APP_IOTC_API_KEY"] || "";
 export const MAP_SUBSCRIPTION_KEY =
   process.env.REACT_MAP_SUBSCRIPTION_KEY || "";
 export const MAP_STATESET_ID = process.env.REACT_MAP_STATESET_ID || "";
+export const MAP_TILESET_ID = process.env.REACT_MAP_TILESET_ID || "";
 
 type Feature = data.Feature<data.Geometry, any>;
 

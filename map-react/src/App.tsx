@@ -11,11 +11,9 @@ import {
   HoverCard,
   IExpandingCardProps,
   DirectionalHint,
-  Link,
 } from "@fluentui/react";
 import { useId } from "@fluentui/react-hooks";
-import { getRandomPosition, useCard } from "./common";
-// import { occupyRoom, reserveRoom } from "./map";
+import { getRandomPosition, useCard, MAP_SUBSCRIPTION_KEY, MAP_STATESET_ID, MAP_TILESET_ID } from "./common";
 import TvIcon from "./icons/tv.png";
 import ThermostatIcon from "./icons/thermostat.png";
 import { ThermostatProperties, TVProperties } from "./types";
@@ -25,13 +23,6 @@ import { ThermostatCard, TvCard } from "./Cards";
 const mapId = "map-id";
 
 const App = React.memo(() => {
-  const subscriptionKey =
-    process.env.REACT_MAP_SUBSCRIPTION_KEY ||
-    "aipGMyZjmHtjPnOTGTCbWQawlMoQ6MOwVLN2QFpa4fw";
-  const tilesetId =
-    process.env.REACT_MAP_TILESET_ID || "0d76d5d2-36fc-1aaa-d511-0302eb3e4bc4";
-  const statesetId =
-    process.env.REACT_MAP_STATESET_ID || "9587d752-caad-37a2-bd2a-a4db8afc0e70";
   const { state: cardState, open: openCard } = useCard();
   const [devices, setDevices] = useState({});
   const { current: tvDataSource } = useRef<atlas.source.DataSource>(
@@ -159,6 +150,7 @@ const App = React.memo(() => {
   }, [refresh]);
 
   useEffect(() => {
+
     const indoorMap = new atlas.Map(mapId, {
       //use your facility's location
       center: [7.446113203345874, 46.946908419572395],
@@ -166,7 +158,7 @@ const App = React.memo(() => {
       view: "Auto",
       authOptions: {
         authType: atlas.AuthenticationType.subscriptionKey,
-        subscriptionKey: subscriptionKey,
+        subscriptionKey: MAP_SUBSCRIPTION_KEY,
       },
       zoom: 18.5,
     });
@@ -177,11 +169,11 @@ const App = React.memo(() => {
 
       const indoorManager = new indoor.IndoorManager(indoorMap, {
         levelControl: levelControl, //level picker
-        tilesetId,
-        statesetId,
+        tilesetId: MAP_TILESET_ID,
+        statesetId: MAP_STATESET_ID,
       });
 
-      if (statesetId.length > 0) {
+      if (MAP_STATESET_ID.length > 0) {
         indoorManager.setDynamicStyling(true);
       }
 
@@ -258,9 +250,6 @@ const App = React.memo(() => {
     onMouseOver,
     tvDataSource,
     thermostatDataSource,
-    statesetId,
-    subscriptionKey,
-    tilesetId,
   ]);
 
   const onRenderExpandedCard = useCallback(
@@ -305,7 +294,7 @@ const App = React.memo(() => {
     }),
     [onRenderCompactCard, onRenderExpandedCard]
   );
-  console.log(tilesetId);
+
   return (
     <div className="App">
       <div id={mapId}></div>
