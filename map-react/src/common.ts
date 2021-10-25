@@ -1,14 +1,24 @@
 import { data } from "azure-maps-control";
 import { useCallback, useReducer } from "react";
 
-export const APP_NAME = process.env["REACT_APP_IOTC_APP_SUBDOMAIN"] || "";
+export const APP_NAME =
+  window.REACT_APP_IOTC_APP_SUBDOMAIN ||
+  process.env["REACT_APP_IOTC_APP_SUBDOMAIN"] ||
+  "";
 export const DOMAIN = "azureiotcentral.com";
 export const API_VERSION = "1.0";
-export const API_KEY = process.env["REACT_APP_IOTC_API_KEY"] || "";
+export const API_KEY =
+  window.REACT_APP_IOTC_API_KEY || process.env["REACT_APP_IOTC_API_KEY"] || "";
 export const MAP_SUBSCRIPTION_KEY =
-  process.env.REACT_MAP_SUBSCRIPTION_KEY || "";
-export const MAP_STATESET_ID = process.env.REACT_MAP_STATESET_ID || "";
-export const MAP_TILESET_ID = process.env.REACT_MAP_TILESET_ID || "";
+  window.REACT_APP_MAP_SUBSCRIPTION_KEY ||
+  process.env["REACT_MAP_SUBSCRIPTION_KEY"] ||
+  "";
+export const MAP_STATESET_ID =
+  window.REACT_APP_MAP_STATESET_ID ||
+  process.env["REACT_MAP_STATESET_ID"] ||
+  "";
+export const MAP_TILESET_ID =
+  window.REACT_APP_MAP_TILESET_ID || process.env["REACT_MAP_TILESET_ID"] || "";
 
 type Feature = data.Feature<data.Geometry, any>;
 
