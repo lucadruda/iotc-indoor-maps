@@ -11,7 +11,8 @@ then
 fi
 
 cd "$SITE_FOLDER"
-npm install
+rm package-lock.json
+npm ci &> logs.txt
 npm run build
 
 az storage blob service-properties update --account-name "$STORAGE_ACCOUNT_NAME" --static-website --404-document error.html --index-document index.html
