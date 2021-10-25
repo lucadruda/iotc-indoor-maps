@@ -1,5 +1,6 @@
 apk update
 apk add nodejs npm
+npm install -g npm
 git clone "$GIT_REPO"
 
 cd ${GIT_REPO##*/}
