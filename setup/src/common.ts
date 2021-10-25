@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 
-/** -------------------- TYPES --------------------- */
+//#region -------------------- TYPES -----------------------
 export type DeploymentParameters = {
   subscriptionId?: string;
   tenantId?: string;
@@ -15,6 +15,22 @@ export type MapParameters = {
 }
 
 export type IoTCentralParameters = { appSubdomain: string; apiKey: string }
+
+export type SiteParameters = {
+  gitRepo: string,
+  gitBranch: string,
+  siteFolder: string,
+  scriptUri: string,
+  mapSubscriptionKey: string,
+  mapTilesetId: string,
+  mapStatesetId: string,
+  iotcApiKey: string,
+  iotcSubdomain: string
+}
+
+//#endregion TYPES
+
+
 
 export function useSteps(start?: number): [number, () => void, () => void] {
   const [current, setCurrent] = useState<number>(start || 0);

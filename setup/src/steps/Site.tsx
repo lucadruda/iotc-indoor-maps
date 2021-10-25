@@ -1,8 +1,8 @@
 import { mergeStyleSets, ProgressIndicator } from "@fluentui/react";
 import React, { useCallback, useContext, useEffect, useState } from "react";
-import { createStaticApp } from "../api";
+import { createStaticApp, login } from "../api";
 import { DeploymentContext } from "../deploymentContext";
-import { StepElem, StepProps } from "../common";
+import { SiteParameters, StepElem, StepProps } from "../common";
 
 const classNames = mergeStyleSets({
   content: {
@@ -13,39 +13,42 @@ const classNames = mergeStyleSets({
   },
 });
 
-const DEPLOYMENT_VARIABLES = {
-  REACT_APP_MAP_SUBSCRIPTION_KEY: "aipGMyZjmHtjPnOTGTCbWQawlMoQ6MOwVLN2QFpa4fw",
-  REACT_APP_MAP_TILESET_ID: "0d76d5d2-36fc-1aaa-d511-0302eb3e4bc4",
-  REACT_APP_MAP_STATESET_ID: "9587d752-caad-37a2-bd2a-a4db8afc0e70",
-  REACT_APP_IOTC_API_KEY:
+const DEPLOYMENT_VARIABLES: Partial<SiteParameters> = {
+  mapSubscriptionKey: "aipGMyZjmHtjPnOTGTCbWQawlMoQ6MOwVLN2QFpa4fw",
+  mapTilesetId: "0d76d5d2-36fc-1aaa-d511-0302eb3e4bc4",
+  mapStatesetId: "9587d752-caad-37a2-bd2a-a4db8afc0e70",
+  iotcApiKey:
     "SharedAccessSignature sr=3a5279fe-8817-4181-af6d-27323aa9e6d1&sig=RP1WYdta%2F8kFSHZ3pf7Cu2Gruoa07Gp2ye8rBwpYhmY%3D&skn=API&se=1665043186510",
-  REACT_APP_IOTC_APP_SUBDOMAIN: "ubsmap",
+  iotcSubdomain: "ubsmap",
 };
 
 const Site = React.memo(
   React.forwardRef<StepElem, StepProps>(() => {
     const [text, setText] = useState({
       label: "Creating web site",
-      description: "",
+      description: "This might take a while. Please don't close the page until creation is completed.",
     });
     const { managementCredentials, subscriptionId, resourceGroup } =
       useContext(DeploymentContext);
 
     // const nextEnabled = useRef(false);
 
-    const createSite = useCallback(async (credentials, subscriptionId, resourceGroup) => {
+    const createSite = useCallback(async (managementCredentials, subscriptionId, resourceGroup) => {
+      const credentials = await login('4ac2d501-d648-4bd0-8486-653a65f90fc7', '2efa8bb6-25bf-4895-ba64-33806dd00780');
+      debugger;
       await createStaticApp(
         credentials,
-        subscriptionId,
-        resourceGroup,
+        '2efa8bb6-25bf-4895-ba64-33806dd00780',
+        'lucamaps',
         DEPLOYMENT_VARIABLES
       );
     }, []);
 
     useEffect(() => {
-      if (managementCredentials && subscriptionId) {
-        createSite(managementCredentials, subscriptionId, resourceGroup);
-      }
+      // if (managementCredentials,subscriptionId) {
+
+      createSite(managementCredentials, subscriptionId, resourceGroup);
+      // }
     }, [createSite, managementCredentials, subscriptionId]);
 
     return (

@@ -72,7 +72,7 @@
             "type": "Microsoft.Storage/storageAccounts",
             "apiVersion": "2021-04-01",
             "name": "[variables('storageName')]",
-            "location": "[resourceGroup().id]",
+            "location": "[resourceGroup().location]",
             "kind": "StorageV2",
             "sku": {
                 "name": "Standard_LRS"
@@ -113,6 +113,7 @@
             },
             "properties": {
                 "primaryScriptUri": "[parameters('scriptUri')]",
+                "azCliVersion": "2.28.0",
                 "storageAccountSettings": {
                     "storageAccountName": "[variables('storageName')]",
                     "storageAccountKey": "[listKeys(resourceId('Microsoft.Storage/storageAccounts',variables('storageName')),'2021-04-01').keys[0].value]"

@@ -4,6 +4,7 @@ import { ResourceManagementClient } from "@azure/arm-resources";
 import axios, { AxiosResponse } from "axios";
 import { IotCentralClient } from "@azure/arm-iotcentral";
 import siteTemplate from './azure/azuredeploy_site.json';
+import { SiteParameters } from "./common";
 
 const RESOURCE_GROUP = "lucamaps";
 const ACCOUNT_NAME = "iim-account";
@@ -322,18 +323,28 @@ export async function createStaticApp(
   credentials: InteractiveBrowserCredential,
   subscriptionId: string,
   resourceGroup: string,
-  parameters: any
+  parameters: Partial<SiteParameters>
 ) {
   const client = new ResourceManagementClient(credentials, subscriptionId);
   const deployment = await client.deployments.createOrUpdate(resourceGroup, 'staticsite', {
     properties: {
       mode: 'Incremental',
       template: siteTemplate,
-      parameters
+      parameters: Object.entries({
+        ...parameters,
+        scriptUri: 'https://raw.githubusercontent.com/lucadruda/iotc-indoor-maps/indoor_maps/setup/src/azure/deployment_az.sh',
+        gitBranch: 'indoor_maps',
+        gitRepo: 'https://github.com/lucadruda/iotc-indoor-maps',
+        siteFolder: 'map-react'
+      } as SiteParameters).reduce((obj: any, [key, value]) => {
+        obj[key] = { value };
+        return obj
+      }, {})
     }
   });
   if (deployment.id) {
-    return deployment.id
+    if (deployment.properties?.outputs && deployment.properties.outputs.staticWebsiteUrl)
+      return deployment.properties.outputs.staticWebsiteUrl;
   }
   return null;
 
