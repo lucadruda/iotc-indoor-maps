@@ -1,3 +1,4 @@
+cd /tmp
 apk update
 apk add nodejs npm
 npm install -g npm
@@ -12,7 +13,7 @@ fi
 
 cd "$SITE_FOLDER"
 rm package-lock.json
-npm ci &> logs.txt
+npm install --legacy-peer-deps
 npm run build
 
 az storage blob service-properties update --account-name "$STORAGE_ACCOUNT_NAME" --static-website --404-document error.html --index-document index.html
