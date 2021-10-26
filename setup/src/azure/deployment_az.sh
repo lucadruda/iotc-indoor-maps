@@ -32,8 +32,13 @@ fi
 cd "$SITE_FOLDER"
 configurer build/index.html
 
+# login using injected managed identity
 az login --identity
+
+# output account info
 az storage account show -g "$RESOURCE_GROUP_NAME" -n "$STORAGE_ACCOUNT_NAME" > "$AZ_SCRIPTS_OUTPUT_PATH"
+
+# use "--auth-mode key" to leverage authentication with current credentials provided by managed identity
 az storage blob service-properties update --auth-mode key --account-name "$STORAGE_ACCOUNT_NAME" --static-website --404-document error.html --index-document index.html
 az storage blob upload-batch --auth-mode key --account-name "$STORAGE_ACCOUNT_NAME" -d "\$web" -s build
 
