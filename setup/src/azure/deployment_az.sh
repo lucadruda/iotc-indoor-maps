@@ -32,6 +32,7 @@ fi
 cd "$SITE_FOLDER"
 configurer build/index.html
 
+az login --identity
 az storage blob service-properties update --account-name "$STORAGE_ACCOUNT_NAME" --static-website --404-document error.html --index-document index.html
 az storage blob upload-batch --account-name "$STORAGE_ACCOUNT_NAME" -d "\$web" -s build
 
