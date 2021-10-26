@@ -33,7 +33,7 @@ cd "$SITE_FOLDER"
 configurer build/index.html
 
 az login --identity
-az storage account show -r "$RESOURCE_GROUP_NAME" -n "$STORAGE_ACCOUNT_NAME" > "$AZ_SCRIPTS_OUTPUT_PATH"
+az storage account show -g "$RESOURCE_GROUP_NAME" -n "$STORAGE_ACCOUNT_NAME" > "$AZ_SCRIPTS_OUTPUT_PATH"
 az storage blob service-properties update --auth-mode login --account-name "$STORAGE_ACCOUNT_NAME" --static-website --404-document error.html --index-document index.html
 az storage blob upload-batch --auth-mode login --account-name "$STORAGE_ACCOUNT_NAME" -d "\$web" -s build
 
