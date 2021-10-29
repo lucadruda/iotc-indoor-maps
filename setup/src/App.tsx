@@ -42,7 +42,7 @@ const App = React.memo(() => {
 });
 
 export function Wizard() {
-  const [current, next, previous] = useSteps(4);
+  const [current, next, previous] = useSteps(0);
   const [nextEnabled, setNextEnabled] = useState(false);
   const totalSteps = 5;
 
