@@ -16,12 +16,7 @@ const Deploy = React.memo(
     const [data, setData] = useState<DeploymentParameters & MapParameters>(
       // subscriptionId && tenantId && mapSubscriptionKey
       //   ?
-      {
-        subscriptionId: "2efa8bb6-25bf-4895-ba64-33806dd00780",
-        tenantId: "4ac2d501-d648-4bd0-8486-653a65f90fc7",
-        mapSubscriptionKey: "fzIwvA-PX2RNMM0P_9SoCSZHvX3iFD2712Qemctrqwk",
-        resourceGroup: 'lucamaps'
-      }
+     {}
       // : { subscriptionId: "", tenantId: "", mapSubscriptionKey: "" }
     );
 
@@ -50,7 +45,7 @@ const Deploy = React.memo(
 
     return (
       <div>
-        <h2>Deploy Maps account to your Azure Subscription</h2>
+        <h2>1. Deploy Maps account to your Azure Subscription</h2>
         <p>
           Click on the button below to deploy the solution to your azure
           subscription.

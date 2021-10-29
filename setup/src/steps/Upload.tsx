@@ -169,7 +169,12 @@ const Upload = React.memo(
     if (!mapSubscriptionKey || !managementCredentials) {
       return <div>loading</div>;
     }
-    return <div className={classNames.listGrid}>{items.map(onRenderCell)}</div>;
+    return (
+      <div>
+        <h2>2. Upload building drawings</h2>
+        <div className={classNames.listGrid}>{items.map(onRenderCell)}</div>
+      </div>
+    );
   })
 );
 

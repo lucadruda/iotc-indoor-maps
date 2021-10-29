@@ -15,6 +15,7 @@ const classNames = mergeStyleSets({
 
 const Site = React.memo(
   React.forwardRef<StepElem, StepProps>(() => {
+    const [siteUrl, setSiteUrl] = useState<string | null>(null);
     const [text, setText] = useState({
       label: "Creating web site",
       description:
@@ -34,17 +35,19 @@ const Site = React.memo(
 
     const createSite = useCallback(
       async (managementCredentials, subscriptionId, resourceGroup) => {
-        await createStaticApp(
-          managementCredentials,
-          subscriptionId,
-          resourceGroup,
-          {
-            iotcApiKey: centralDetails?.apiKey,
-            iotcSubdomain: centralDetails?.appSubdomain,
-            mapSubscriptionKey,
-            mapTilesetId: tileSetId,
-            mapStatesetId: statesetId,
-          }
+        setSiteUrl(
+          await createStaticApp(
+            managementCredentials,
+            subscriptionId,
+            resourceGroup,
+            {
+              iotcApiKey: centralDetails?.apiKey,
+              iotcSubdomain: centralDetails?.appSubdomain,
+              mapSubscriptionKey,
+              mapTilesetId: tileSetId,
+              mapStatesetId: statesetId,
+            }
+          )
         );
       },
       [centralDetails, mapSubscriptionKey, tileSetId, statesetId]
@@ -65,8 +68,7 @@ const Site = React.memo(
           <a href={siteUrl}>{siteUrl}</a>
         </div>
       );
-    }
-    else {
+    } else {
       return (
         <div className={classNames.content}>
           <ProgressIndicator {...text} />
