@@ -121,11 +121,11 @@
                 "retentionInterval": "PT4H",
                 "environmentVariables": [
                     {
-                        "name": "ResourceGroupName",
+                        "name": "RESOURCE_GROUP_NAME",
                         "value": "[resourceGroup().name]"
                     },
                     {
-                        "name": "StorageAccountName",
+                        "name": "STORAGE_ACCOUNT_NAME",
                         "value": "[variables('storageName')]"
                     },
                     {

@@ -28,6 +28,7 @@ const Site = React.memo(
       label: "Creating web site",
       description: "This might take a while. Please don't close the page until creation is completed.",
     });
+    const [siteUrl, setSiteUrl] = useState<string | null>(null);
     const { managementCredentials, subscriptionId, resourceGroup } =
       useContext(DeploymentContext);
 
@@ -36,12 +37,15 @@ const Site = React.memo(
     const createSite = useCallback(async (managementCredentials, subscriptionId, resourceGroup) => {
       const credentials = await login('4ac2d501-d648-4bd0-8486-653a65f90fc7', '2efa8bb6-25bf-4895-ba64-33806dd00780');
       debugger;
-      await createStaticApp(
+      const creationResult = await createStaticApp(
         credentials,
         '2efa8bb6-25bf-4895-ba64-33806dd00780',
         'lucamaps',
         DEPLOYMENT_VARIABLES
       );
+      if (creationResult) {
+        setSiteUrl(creationResult);
+      }
     }, []);
 
     useEffect(() => {
@@ -51,11 +55,22 @@ const Site = React.memo(
       // }
     }, [createSite, managementCredentials, subscriptionId]);
 
-    return (
-      <div className={classNames.content}>
-        <ProgressIndicator {...text} />
-      </div>
-    );
+    if (siteUrl) {
+      return (
+        <div className={classNames.content}>
+          <h2>Congratulations!!</h2>
+          <h4>Your website is available here:</h4>
+          <a href={siteUrl}>{siteUrl}</a>
+        </div>
+      );
+    }
+    else {
+      return (
+        <div className={classNames.content}>
+          <ProgressIndicator {...text} />
+        </div>
+      );
+    }
   })
 );
 
