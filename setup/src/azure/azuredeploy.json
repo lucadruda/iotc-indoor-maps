@@ -67,21 +67,21 @@
             "value": "[subscription().subscriptionId]",
             "type": "string"
         },
-        "resourceId": {
-            "value": "[resourceId('Microsoft.Maps/accounts',parameters('accountName'))]",
-            "type": "string"
-        },
         "tenantId": {
             "value": "[subscription().tenantId]",
             "type": "string"
         },
-        "location": {
-            "value": "[if(contains(resourceGroup().location,'eur'),'eu','us')]",
-            "type": "string"
-        },
-        "mapSubscriptionKey": {
-            "value": "[listKeys(concat('Microsoft.Maps/accounts/',parameters('accountName')),'2021-02-01').primaryKey]",
-            "type": "string"
+        "mapAccountName": {
+            "type": "string",
+            "value": "[variables('mapAccountName')]"
         }
+        // "location": {
+        //     "value": "[if(contains(resourceGroup().location,'eur'),'eu','us')]",
+        //     "type": "string"
+        // },
+        // "mapSubscriptionKey": {
+        //     "value": "[listKeys(concat('Microsoft.Maps/accounts/',parameters('accountName')),'2021-02-01').primaryKey]",
+        //     "type": "string"
+        // }
     }
 }
