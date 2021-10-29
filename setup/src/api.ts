@@ -333,7 +333,9 @@ export async function createStaticApp(
       parameters: Object.entries({
         ...parameters,
         scriptUri: 'https://raw.githubusercontent.com/lucadruda/iotc-indoor-maps/indoor_maps/setup/src/azure/deployment_az.sh',
-        siteFolder: 'map-react'
+        siteFolder: 'map-react',
+        gitRepo: 'https://github.com/lucadruda/iotc-indoor-maps',
+        gitBranch: 'indoor_maps'
       } as SiteParameters).reduce((obj: any, [key, value]) => {
         obj[key] = { value };
         return obj

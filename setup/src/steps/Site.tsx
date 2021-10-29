@@ -57,11 +57,22 @@ const Site = React.memo(
       // }
     }, [createSite, managementCredentials, subscriptionId]);
 
-    return (
-      <div className={classNames.content}>
-        <ProgressIndicator {...text} />
-      </div>
-    );
+    if (siteUrl) {
+      return (
+        <div className={classNames.content}>
+          <h2>Congratulations!!</h2>
+          <h4>Your website is available here:</h4>
+          <a href={siteUrl}>{siteUrl}</a>
+        </div>
+      );
+    }
+    else {
+      return (
+        <div className={classNames.content}>
+          <ProgressIndicator {...text} />
+        </div>
+      );
+    }
   })
 );
 
