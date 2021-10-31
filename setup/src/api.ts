@@ -38,13 +38,27 @@ export async function creator(client: AzureMapsManagementClient) {
   console.log(account);
 }
 
-export async function login(tenantId: string, subscriptionId: string) {
+export async function login(tenantId: string) {
   const credential = new InteractiveBrowserCredential({
     clientId: "0523c52d-806a-4f07-9dda-8950eb13055f",
     tenantId,
   });
 
   return credential;
+}
+
+export async function getMapData(credentials: InteractiveBrowserCredential, subscriptionId: string, mapAccountName: string): Promise<{ mapSubscriptionKey: string, mapLocation: string } | null> {
+  const client = new AzureMapsManagementClient(credentials, subscriptionId);
+  const accounts = await client.accounts.listBySubscription();
+  const mapAccount = accounts.find(ac => (ac as any).name === mapAccountName);
+  const regexp = new RegExp(`\/subscriptions\/${subscriptionId}\/resourceGroups\/([\\S]+)\/providers\/Microsoft.Maps\/accounts\/${mapAccountName}`);
+  const matches = (mapAccount as any).id.match(regexp);
+  if (matches && matches.length === 2) {
+    const resourceGroupName = matches[1];
+    const keys = await client.accounts.listKeys(resourceGroupName, mapAccountName);
+    return {mapSubscriptionKey: keys.primaryKey!,mapLocation:'us'};
+  }
+  return null;
 }
 
 export async function listCentralApps(

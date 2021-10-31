@@ -8,6 +8,8 @@ export type DeploymentParameters = {
 }
 
 export type MapParameters = {
+  mapAccountName?: string,
+  mapLocation?: string,
   mapSubscriptionKey?: string,
   drawingUUIDs?: string[],
   tileSetId?: string,

@@ -53,7 +53,7 @@ type UploadData = {
 const Upload = React.memo(
   React.forwardRef<StepElem, StepProps>(({ enableNext }, ref) => {
     const [items, setItems] = useState<(UploadData | null)[]>([null]);
-    const { mapSubscriptionKey, store, managementCredentials } =
+    const { mapSubscriptionKey, mapAccountName, store, managementCredentials } =
       useContext(DeploymentContext);
 
     const nextEnabled = useRef(false);
@@ -132,9 +132,8 @@ const Upload = React.memo(
         return (
           <div
             key={`upload-b-${index}`}
-            className={`${classNames.listGridItem} ${
-              item === null ? classNames.clickable : ""
-            }`}
+            className={`${classNames.listGridItem} ${item === null ? classNames.clickable : ""
+              }`}
           >
             {item === null ? (
               <div {...getRootProps()}>
@@ -167,11 +166,18 @@ const Upload = React.memo(
     );
 
     if (!mapSubscriptionKey || !managementCredentials) {
-      return <div>loading</div>;
+      return (
+        <div className={"centered"}>
+          <ProgressIndicator className="pageload" />
+        </div>
+      );
     }
     return (
       <div>
-        <h2>2. Upload building drawings</h2>
+        <h2>Upload building drawings</h2>
+        <p>Map account <h4 style={{ display: 'inline' }}>"{mapAccountName}"</h4> found.</p>
+        <p>Upload your drawings in zip format.<br />
+          For drawing package requirements, follow details <a href='https://docs.microsoft.com/en-us/azure/azure-maps/drawing-requirements'>here</a></p>
         <div className={classNames.listGrid}>{items.map(onRenderCell)}</div>
       </div>
     );

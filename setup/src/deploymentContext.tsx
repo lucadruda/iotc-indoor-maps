@@ -11,7 +11,6 @@ type IDeploymentState = DeploymentParameters & MapParameters & {
   centralDetails?: IoTCentralParameters;
 };
 
-const initialState: IDeploymentState = {};
 
 export type IDeploymentContext = IDeploymentState & {
   store: (data: Partial<IDeploymentState>) => void;
@@ -23,11 +22,17 @@ const { Provider } = DeploymentContext;
 const DeploymentProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [state, setState] = useState<IDeploymentState>(initialState);
   const { read, write } = useStorage();
+  const [state, setState] = useState<IDeploymentState>(() => {
+    const data = read("data");
+    if (data) {
+      return JSON.parse(data);
+    }
+    return {};
+  });
   const authenticate = useCallback(
-    async (tenantId, subscriptionId) => {
-      const client = await login(tenantId, subscriptionId);
+    async (tenantId) => {
+      const client = await login(tenantId);
       setState((current) => ({ ...current, managementCredentials: client }));
     },
     [setState]
@@ -45,17 +50,9 @@ const DeploymentProvider: React.FC<{ children: React.ReactNode }> = ({
     [setState, write]
   );
 
-  /** Recover from storage */
-  useEffect(() => {
-    const data = read("data");
-    if (data) {
-      setState((current) => ({ ...current, ...JSON.parse(data) }));
-    }
-  }, [read]);
-
   useEffect(() => {
     if ((state.tenantId, state.subscriptionId)) {
-      authenticate(state.tenantId, state.subscriptionId);
+      authenticate(state.tenantId);
     }
   }, [state.tenantId, state.subscriptionId, authenticate]);
 

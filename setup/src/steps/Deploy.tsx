@@ -1,4 +1,4 @@
-import { TextField } from "@fluentui/react";
+import { mergeStyleSets, TextField } from "@fluentui/react";
 import React, {
   useContext,
   useEffect,
@@ -8,23 +8,35 @@ import React, {
 } from "react";
 import { DeploymentContext } from "../deploymentContext";
 import { DeploymentParameters, MapParameters, StepElem, StepProps } from "../common";
+import { getMapData, login } from "../api";
+import DeploymentImage from '../media/deployment.png';
+import Outputs from '../media/outputs.png';
+
+const classNames = mergeStyleSets({
+  imageContainer:{
+    display:'flex'
+  }
+  images: {
+    width: '40%',
+    display: 'block'
+  }
+});
 
 const Deploy = React.memo(
   React.forwardRef<StepElem, StepProps>(({ enableNext }, ref) => {
-    const { store } = useContext(DeploymentContext);
+    const { store, tenantId, subscriptionId, mapAccountName } = useContext(DeploymentContext);
 
-    const [data, setData] = useState<DeploymentParameters & MapParameters>(
-      // subscriptionId && tenantId && mapSubscriptionKey
-      //   ?
-     {}
-      // : { subscriptionId: "", tenantId: "", mapSubscriptionKey: "" }
-    );
+    const [data, setData] = useState<DeploymentParameters & MapParameters>({ tenantId, subscriptionId, mapAccountName });
 
     useImperativeHandle(
       ref,
       () => ({
-        process: () => {
-          store(data);
+        process: async () => {
+          const creds = await login(data.tenantId!);
+          const mapData = await getMapData(creds, data.subscriptionId!, data.mapAccountName!);
+          if (mapData) {
+            store({ ...data, mapSubscriptionKey: mapData.mapSubscriptionKey });
+          }
         },
       }),
       [store, data]
@@ -35,7 +47,7 @@ const Deploy = React.memo(
       if (
         data.subscriptionId &&
         data.tenantId &&
-        data.mapSubscriptionKey &&
+        data.mapAccountName &&
         !nextEnabled.current
       ) {
         enableNext();
@@ -45,19 +57,26 @@ const Deploy = React.memo(
 
     return (
       <div>
-        <h2>1. Deploy Maps account to your Azure Subscription</h2>
+        <h2>Deploy Maps account to your Azure Subscription</h2>
+        <h4>Follow these steps to deploy an Azure Maps account.</h4>
         <p>
-          Click on the button below to deploy the solution to your azure
+          1. Click on the "Deploy" button to deploy the solution to your azure
           subscription.
         </p>
+        <p>
+          2. Once deployment gets completed head over the "outputs" section and copy the values into the form below.
+        </p>
+        <div>
+          <img className={classNames.images} src={DeploymentImage} alt='deployment' />
+          <img className={classNames.images} src={Outputs} alt='outputs' />
+        </div>
         <a
-          href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Flucadruda%2Fubs-workshop%2Findoor_maps%2Fsetup%2Fazure%2Fazuredeploy.json%3Ftoken%3DAARKIISFGX2MRU7JK7VOZXTBNFEMQ"
+          href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Flucadruda%2Fiotc-indoor-maps%2Findoor_maps%2Fsetup%2Fsrc%2Fazure%2Fazuredeploy.json"
           target="_blank"
           rel="noreferrer"
         >
           <img src="https://aka.ms/deploytoazurebutton" alt="Deploy to Azure" />
         </a>
-        <div></div>
         <div style={{ textAlign: "start" }}>
           <TextField
             label="Subscription Id"
@@ -73,20 +92,20 @@ const Deploy = React.memo(
               setData((current) => ({ ...current, tenantId: val! }));
             }}
           />
-          <TextField
+          {/* <TextField
             label="Resource Group Name"
             value={data.resourceGroup}
             onChange={(e, val) => {
               setData((current) => ({ ...current, resourceGroup: val! }));
             }}
-          />
+          /> */}
           <TextField
-            label="Map Subscription Key"
-            value={data.mapSubscriptionKey}
+            label="Map Account Name"
+            value={data.mapAccountName}
             onChange={(e, val) => {
               setData((current) => ({
                 ...current,
-                mapSubscriptionKey: val!,
+                mapAccountName: val!,
               }));
             }}
           />
