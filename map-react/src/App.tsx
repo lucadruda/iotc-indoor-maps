@@ -13,7 +13,15 @@ import {
   DirectionalHint,
 } from "@fluentui/react";
 import { useId } from "@fluentui/react-hooks";
-import { getRandomPosition, useCard, MAP_SUBSCRIPTION_KEY, MAP_STATESET_ID, MAP_TILESET_ID } from "./common";
+import {
+  getRandomPosition,
+  useCard,
+  MAP_SUBSCRIPTION_KEY,
+  MAP_STATESET_ID,
+  MAP_TILESET_ID,
+  MAP_LON,
+  MAP_LAT,
+} from "./common";
 import TvIcon from "./icons/tv.png";
 import ThermostatIcon from "./icons/thermostat.png";
 import { ThermostatProperties, TVProperties } from "./types";
@@ -150,10 +158,9 @@ const App = React.memo(() => {
   }, [refresh]);
 
   useEffect(() => {
-
     const indoorMap = new atlas.Map(mapId, {
       //use your facility's location
-      center: [7.446113203345874, 46.946908419572395],
+      center: [MAP_LON, MAP_LAT],
       //or, you can use bounds: [# west, # south, # east, # north] and replace # with your Map bounds
       view: "Auto",
       authOptions: {
@@ -245,12 +252,7 @@ const App = React.memo(() => {
         }
       });
     });
-  }, [
-    setFeatures,
-    onMouseOver,
-    tvDataSource,
-    thermostatDataSource,
-  ]);
+  }, [setFeatures, onMouseOver, tvDataSource, thermostatDataSource]);
 
   const onRenderExpandedCard = useCallback(
     (): JSX.Element => (

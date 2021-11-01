@@ -1,6 +1,6 @@
 import axios from "axios";
 import { Device, IoTCDevice } from "./types";
-import { API_KEY, API_VERSION, APP_NAME, DOMAIN } from "./common";
+import { API_KEY, API_VERSION, APP_URL } from "./common";
 const TV_MODEL = "dtmi:modelDefinition:ndexursjf:eie12urydm";
 const THM_MODEL = "dtmi:modelDefinition:frfn3tauo:xwmfyixfc5";
 
@@ -13,7 +13,7 @@ export async function getDevices() {
     thermostats: [],
   };
   const devs = await axios.get<{ value: IoTCDevice[] }>(
-    `https://${APP_NAME}.${DOMAIN}/api/devices?api-version=${API_VERSION}`,
+    `https://${APP_URL}/api/devices?api-version=${API_VERSION}`,
     {
       method: "GET",
       headers: {
@@ -46,7 +46,7 @@ export async function getDevices() {
 
 export async function getDeviceProperties(deviceId: string) {
   const props = await axios.get<{ [propId: string]: any }>(
-    `https://${APP_NAME}.${DOMAIN}/api/devices/${deviceId}/properties?api-version=${API_VERSION}`,
+    `https://${APP_URL}/api/devices/${deviceId}/properties?api-version=${API_VERSION}`,
     {
       headers: {
         Authorization: API_KEY,
@@ -66,7 +66,7 @@ export async function getTelemetryValue(
   const res = await axios.get<{
     value: any;
   }>(
-    `https://${APP_NAME}.${DOMAIN}/api/devices/${deviceId}/telemetry/${telemetryName}?api-version=${API_VERSION}`,
+    `https://${APP_URL}/api/devices/${deviceId}/telemetry/${telemetryName}?api-version=${API_VERSION}`,
     {
       headers: {
         Authorization: API_KEY,
@@ -85,7 +85,7 @@ export async function triggerCommand(
   commandPayload?: any
 ) {
   const res = await axios.post<{}>(
-    `https://${APP_NAME}.${DOMAIN}/api/devices/${deviceId}/commands/${commandName}?api-version=${API_VERSION}`,
+    `https://${APP_URL}/api/devices/${deviceId}/commands/${commandName}?api-version=${API_VERSION}`,
     commandPayload ?? {},
     {
       headers: {
@@ -105,7 +105,7 @@ export async function setProperty(
   propertyValue: any
 ) {
   const res = await axios.patch<{}>(
-    `https://${APP_NAME}.${DOMAIN}/api/devices/${deviceId}/properties?api-version=${API_VERSION}`,
+    `https://${APP_URL}/api/devices/${deviceId}/properties?api-version=${API_VERSION}`,
     { [propertyName]: propertyValue },
     {
       headers: {
