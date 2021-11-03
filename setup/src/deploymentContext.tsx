@@ -16,6 +16,7 @@ type IDeploymentState = DeploymentParameters &
   MapParameters & {
     managementCredentials?: InteractiveBrowserCredential | TokenCredential;
     centralDetails?: IoTCentralParameters;
+    siteUrl?: string
   };
 
 export type IDeploymentContext = IDeploymentState & {

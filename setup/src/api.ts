@@ -373,12 +373,13 @@ export async function createStaticApp(
       },
     }
   );
+  debugger;
   if (deployment.id) {
     if (
       deployment.properties?.outputs &&
       deployment.properties.outputs.staticWebsiteUrl
     )
-      return deployment.properties.outputs.staticWebsiteUrl;
+      return deployment.properties.outputs.staticWebsiteUrl.value;
   }
   return null;
 }

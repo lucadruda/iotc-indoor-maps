@@ -80,6 +80,7 @@ const Deploy = React.memo(
               ...data,
               managementCredentials: creds,
               mapSubscriptionKey: mapData.mapSubscriptionKey,
+              resourceGroup:mapData.resourceGroupName
             });
           }
         },

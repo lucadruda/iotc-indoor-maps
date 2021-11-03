@@ -2,7 +2,7 @@ import { DefaultButton, mergeStyleSets, ProgressIndicator } from "@fluentui/reac
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { createStaticApp, login } from "../api";
 import { DeploymentContext } from "../deploymentContext";
-import { SiteParameters, StepElem, StepProps } from "../common";
+import { StepElem, StepProps } from "../common";
 
 const classNames = mergeStyleSets({
   container: {
@@ -23,7 +23,6 @@ const classNames = mergeStyleSets({
 
 const Site = React.memo(
   React.forwardRef<StepElem, StepProps>(() => {
-    const [siteUrl, setSiteUrl] = useState<string | null>(null);
     const [executing, setExecuting] = useState(false);
     const [text, setText] = useState({
       label: "Creating web site",
@@ -39,39 +38,42 @@ const Site = React.memo(
       statesetId,
       centralDetails,
       centerCoordinates,
+      siteUrl,
+      store
     } = useContext(DeploymentContext);
 
     // const nextEnabled = useRef(false);
 
     const createSite = useCallback(
       async (managementCredentials, subscriptionId, resourceGroup) => {
-        setSiteUrl(
-          await createStaticApp(
-            managementCredentials,
-            subscriptionId,
-            resourceGroup,
-            {
-              iotcApiKey: centralDetails?.apiKey,
-              iotcAppUrl: centralDetails?.appUrl,
-              mapSubscriptionKey,
-              mapTilesetId: tileSetId,
-              mapStatesetId: statesetId,
-              mapLatitude: centerCoordinates
-                ? `${centerCoordinates[0]}`
-                : undefined,
-              mapLongitude: centerCoordinates
-                ? `${centerCoordinates[1]}`
-                : undefined,
-            }
-          )
+        const siteUrl = await createStaticApp(
+          managementCredentials,
+          subscriptionId,
+          resourceGroup,
+          {
+            iotcApiKey: centralDetails?.apiKey,
+            iotcAppUrl: centralDetails?.appUrl,
+            mapSubscriptionKey,
+            mapTilesetId: tileSetId,
+            mapStatesetId: statesetId,
+            mapLatitude: centerCoordinates
+              ? `${centerCoordinates[0]}`
+              : '',
+            mapLongitude: centerCoordinates
+              ? `${centerCoordinates[1]}`
+              : '',
+          }
         );
+        if (siteUrl) {
+          store({ siteUrl });
+        }
       },
-      [centralDetails, mapSubscriptionKey, tileSetId, statesetId]
+      [centralDetails, mapSubscriptionKey, tileSetId, statesetId, store]
     );
 
     if (siteUrl) {
       return (
-        <div className={classNames.content}>
+        <div className={classNames.container}>
           <h2>Congratulations!!</h2>
           <h4>Your website is available here:</h4>
           <a href={siteUrl}>{siteUrl}</a>
@@ -80,7 +82,7 @@ const Site = React.memo(
     }
     else if (executing) {
       return (
-        <div className={classNames.content}>
+        <div className={classNames.container}>
           <ProgressIndicator {...text} />
         </div>
       );
