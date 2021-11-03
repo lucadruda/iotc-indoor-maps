@@ -1,3 +1,8 @@
+import {
+  AccessToken,
+  InteractiveBrowserCredential,
+  TokenCredential,
+} from "@azure/identity";
 import { useCallback, useState } from "react";
 
 //#region -------------------- TYPES -----------------------
@@ -5,34 +10,42 @@ export type DeploymentParameters = {
   subscriptionId?: string;
   tenantId?: string;
   resourceGroup?: string;
-}
+};
+
+export type DrawingUploadData = {
+  progress: number;
+  name: string;
+  size: string;
+  uuid?: string;
+};
 
 export type MapParameters = {
-  mapAccountName?: string,
-  mapLocation?: string,
-  mapSubscriptionKey?: string,
-  drawingUUIDs?: string[],
-  tileSetId?: string,
-  statesetId?: string,
-}
+  mapAccountName?: string;
+  mapLocation?: string;
+  mapSubscriptionKey?: string;
+  drawingUUIDs?: DrawingUploadData[];
+  tileSetId?: string;
+  statesetId?: string;
+  centerCoordinates?: [number, number];
+};
 
-export type IoTCentralParameters = { appSubdomain: string; apiKey: string }
+export type IoTCentralParameters = { appUrl: string; apiKey: string };
 
 export type SiteParameters = {
-  gitRepo: string,
-  gitBranch: string,
-  siteFolder: string,
-  scriptUri: string,
-  mapSubscriptionKey: string,
-  mapTilesetId: string,
-  mapStatesetId: string,
-  iotcApiKey: string,
-  iotcSubdomain: string
-}
+  gitRepo: string;
+  gitBranch: string;
+  siteFolder: string;
+  scriptUri: string;
+  mapSubscriptionKey: string;
+  mapLatitude?: string;
+  mapLongitude?: string;
+  mapTilesetId: string;
+  mapStatesetId: string;
+  iotcApiKey: string;
+  iotcAppUrl: string;
+};
 
 //#endregion TYPES
-
-
 
 export function useSteps(start?: number): [number, () => void, () => void] {
   const [current, setCurrent] = useState<number>(start || 0);
@@ -99,4 +112,18 @@ export function useStorage() {
     return localStorage.setItem(item, value);
   }, []);
   return { read, write };
+}
+
+/** ------------- UTILITY ------------------ */
+
+export type AzureCredentials = InteractiveBrowserCredential | TokenCredential;
+
+export function getCredentialForToken(
+  accessToken: AccessToken
+): TokenCredential {
+  return {
+    getToken: (scope) => {
+      return Promise.resolve(accessToken);
+    },
+  };
 }

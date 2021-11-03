@@ -1,10 +1,10 @@
 import { AzureMapsManagementClient } from "@azure/arm-maps";
-import { InteractiveBrowserCredential } from "@azure/identity";
 import { ResourceManagementClient } from "@azure/arm-resources";
 import axios, { AxiosResponse } from "axios";
 import { IotCentralClient } from "@azure/arm-iotcentral";
-import siteTemplate from './azure/azuredeploy_site.json';
-import { SiteParameters } from "./common";
+import siteTemplate from "./azure/azuredeploy_site.json";
+import { AzureCredentials, SiteParameters } from "./common";
+import { InteractiveBrowserCredential } from "@azure/identity";
 
 const RESOURCE_GROUP = "lucamaps";
 const ACCOUNT_NAME = "iim-account";
@@ -47,22 +47,32 @@ export async function login(tenantId: string) {
   return credential;
 }
 
-export async function getMapData(credentials: InteractiveBrowserCredential, subscriptionId: string, mapAccountName: string): Promise<{ mapSubscriptionKey: string, mapLocation: string } | null> {
+export async function getMapData(
+  credentials: AzureCredentials,
+  subscriptionId: string,
+  mapAccountName: string
+): Promise<{ mapSubscriptionKey: string; mapLocation: string } | null> {
   const client = new AzureMapsManagementClient(credentials, subscriptionId);
   const accounts = await client.accounts.listBySubscription();
-  const mapAccount = accounts.find(ac => (ac as any).name === mapAccountName);
-  const regexp = new RegExp(`\/subscriptions\/${subscriptionId}\/resourceGroups\/([\\S]+)\/providers\/Microsoft.Maps\/accounts\/${mapAccountName}`);
+  const mapAccount = accounts.find((ac) => (ac as any).name === mapAccountName);
+  const regexp = new RegExp(
+    `\/subscriptions\/${subscriptionId}\/resourceGroups\/([\\S]+)\/providers\/Microsoft.Maps\/accounts\/${mapAccountName}`
+  );
   const matches = (mapAccount as any).id.match(regexp);
   if (matches && matches.length === 2) {
     const resourceGroupName = matches[1];
-    const keys = await client.accounts.listKeys(resourceGroupName, mapAccountName);
-    return {mapSubscriptionKey: keys.primaryKey!,mapLocation:'us'};
+    const keys = await client.accounts.listKeys(
+      resourceGroupName,
+      mapAccountName
+    );
+    //TODO use real location
+    return { mapSubscriptionKey: keys.primaryKey!, mapLocation: "us" };
   }
   return null;
 }
 
 export async function listCentralApps(
-  credentials: InteractiveBrowserCredential,
+  credentials: AzureCredentials,
   subscriptionId: string
 ) {
   const client = new IotCentralClient(credentials, subscriptionId);
@@ -70,12 +80,13 @@ export async function listCentralApps(
 }
 
 export async function createCentralApiToken(
-  credentials: InteractiveBrowserCredential,
-  appSubDomain: string
+  credentials: AzureCredentials,
+  appUrl: string
 ): Promise<string | null> {
   const bearer = await credentials.getToken(
     "https://apps.azureiotcentral.com/user_impersonation"
   );
+  appUrl = appUrl.split(".")[0] + ".azureiotcentral.com";
   const tokenId = `iotc-indm-${Math.floor(Math.random() * 20000)}`;
   const res = await axios.put<{
     id: string;
@@ -85,7 +96,7 @@ export async function createCentralApiToken(
     expiry: string;
     token: string;
   }>(
-    `https://${appSubDomain}.azureiotcentral.com/api/apiTokens/${tokenId}?api-version=${IOTC_API_VERSION}`,
+    `https://${appUrl}/api/apiTokens/${tokenId}?api-version=${IOTC_API_VERSION}`,
     {
       roles: [
         {
@@ -96,7 +107,7 @@ export async function createCentralApiToken(
     },
     {
       headers: {
-        Authorization: `Bearer ${bearer.token}`,
+        Authorization: `Bearer ${bearer!.token}`,
       },
     }
   );
@@ -182,7 +193,8 @@ export async function createOrUpdateDataSet(
   datasetId?: string
 ) {
   const res = await axios.post<any>(
-    `https://${location}.atlas.microsoft.com/datasets?api-version=${API_VERSION}&conversionId=${conversionId}&subscription-key=${subscriptionKey}${datasetId ? `&datasetId=${datasetId}` : ""
+    `https://${location}.atlas.microsoft.com/datasets?api-version=${API_VERSION}&conversionId=${conversionId}&subscription-key=${subscriptionKey}${
+      datasetId ? `&datasetId=${datasetId}` : ""
     }`
   );
   if (res.headers["operation-location"]) {
@@ -334,32 +346,39 @@ async function waitForSuccess(
 }
 
 export async function createStaticApp(
-  credentials: InteractiveBrowserCredential,
+  credentials: AzureCredentials,
   subscriptionId: string,
   resourceGroup: string,
   parameters: Partial<SiteParameters>
 ) {
   const client = new ResourceManagementClient(credentials, subscriptionId);
-  const deployment = await client.deployments.createOrUpdate(resourceGroup, 'staticsite', {
-    properties: {
-      mode: 'Incremental',
-      template: siteTemplate,
-      parameters: Object.entries({
-        ...parameters,
-        scriptUri: 'https://raw.githubusercontent.com/lucadruda/iotc-indoor-maps/indoor_maps/setup/src/azure/deployment_az.sh',
-        siteFolder: 'map-react',
-        gitRepo: 'https://github.com/lucadruda/iotc-indoor-maps',
-        gitBranch: 'indoor_maps'
-      } as SiteParameters).reduce((obj: any, [key, value]) => {
-        obj[key] = { value };
-        return obj
-      }, {})
+  const deployment = await client.deployments.createOrUpdate(
+    'lucadruda',
+    "staticsite",
+    {
+      properties: {
+        mode: "Incremental",
+        template: siteTemplate,
+        parameters: Object.entries({
+          ...parameters,
+          scriptUri:
+            "https://raw.githubusercontent.com/lucadruda/iotc-indoor-maps/indoor_maps/setup/src/azure/deployment_az.sh",
+          siteFolder: "map-react",
+          gitRepo: "https://github.com/lucadruda/iotc-indoor-maps",
+          gitBranch: "indoor_maps",
+        } as SiteParameters).reduce((obj: any, [key, value]) => {
+          obj[key] = { value };
+          return obj;
+        }, {}),
+      },
     }
-  });
+  );
   if (deployment.id) {
-    if (deployment.properties?.outputs && deployment.properties.outputs.staticWebsiteUrl)
+    if (
+      deployment.properties?.outputs &&
+      deployment.properties.outputs.staticWebsiteUrl
+    )
       return deployment.properties.outputs.staticWebsiteUrl;
   }
   return null;
-
 }

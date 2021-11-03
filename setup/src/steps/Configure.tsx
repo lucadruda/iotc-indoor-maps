@@ -19,9 +19,9 @@ const classNames = mergeStyleSets({
 });
 
 const Configure = React.memo(
-  React.forwardRef<StepElem, StepProps>(() => {
+  React.forwardRef<StepElem, StepProps>(({ enableNext }, ref) => {
     const [text, setText] = useState({ label: "", description: "" });
-    const { drawingUUIDs, mapSubscriptionKey, store } =
+    const { drawingUUIDs, mapSubscriptionKey, statesetId, store } =
       useContext(DeploymentContext);
 
     const execute = useCallback(async () => {
@@ -29,13 +29,21 @@ const Configure = React.memo(
         return;
       }
       const convIds: string[] = [];
+      if (statesetId) {
+        setText({
+          label: `State set created.`,
+          description: statesetId ?? "",
+        });
+        enableNext();
+        return;
+      }
       for (const drawingUUID of drawingUUIDs) {
         setText({
-          label: `Converting packages`,
+          label: `Converting packages. Please wait...`,
           description: `Converting package ${drawingUUID}`,
         });
         const convId = await convertPackage(
-          drawingUUID,
+          drawingUUID?.uuid!,
           "us",
           mapSubscriptionKey!
         );
@@ -82,6 +90,7 @@ const Configure = React.memo(
             description: statesetId ?? "",
           });
           store({ tileSetId, statesetId });
+          enableNext();
         }
       }
     }, [drawingUUIDs, mapSubscriptionKey, setText, store]);
@@ -92,7 +101,10 @@ const Configure = React.memo(
 
     return (
       <div className={classNames.content}>
-        <ProgressIndicator {...text} />
+        <ProgressIndicator
+          {...text}
+          percentComplete={statesetId ? 1 : undefined}
+        />
       </div>
     );
   })

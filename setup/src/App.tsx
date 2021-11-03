@@ -1,4 +1,4 @@
-import { FontIcon, mergeStyleSets } from "@fluentui/react";
+import { DefaultButton, FontIcon, mergeStyleSets } from "@fluentui/react";
 import React, { useRef, useState } from "react";
 import { StepElem, useSteps } from "./common";
 import Deploy from "./steps/Deploy";
@@ -85,40 +85,25 @@ export function Wizard() {
     <div className={classNames.wizardBody}>
       {renderComponent(current)}
       <div className={classNames.footer}>
-        <div
-          className={classNames.arrow}
-          style={{
-            ...(current === 0 ? { display: "none" } : {}),
-            float: "left",
+        <DefaultButton
+          primary
+          text="Previous"
+          iconProps={{ iconName: "Back" }}
+          onClick={previous}
+          style={current === 0 ? { display: "none" } : { float: "left" }}
+        />
+        <DefaultButton
+          primary
+          text="Next"
+          iconProps={{ iconName: "Forward" }}
+          disabled={current === totalSteps - 1 || !nextEnabled}
+          style={{ float: "right" }}
+          onClick={() => {
+            compRef[current].current?.process();
+            next();
+            setNextEnabled(false);
           }}
-        >
-          <FontIcon
-            iconName="Back"
-            onClick={previous}
-            className={classNames.icon}
-          />
-          <p>Previous</p>
-        </div>
-        <div
-          className={classNames.arrow}
-          style={{
-            ...(current === totalSteps - 1 || !nextEnabled
-              ? { display: "none" }
-              : {}),
-            float: "right",
-          }}
-        >
-          <p>Next</p>
-          <FontIcon
-            iconName="Forward"
-            onClick={() => {
-              compRef[current].current?.process();
-              next();
-              setNextEnabled(false);
-            }}
-            className={classNames.icon}
-          />
-        </div>
+        />
       </div>
     </div>
   );

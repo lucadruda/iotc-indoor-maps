@@ -33,6 +33,20 @@
                 "description": "The azure map subscription key"
             }
         },
+        "mapLatitude": {
+            "type": "string",
+            "defaultValue": null,
+            "metadata": {
+                "description": "The map center latitude"
+            }
+        },
+        "mapLongitude": {
+            "type": "string",
+            "defaultValue": null,
+            "metadata": {
+                "description": "The map center longitude"
+            }
+        },
         "mapTilesetId": {
             "type": "string",
             "metadata": {
@@ -53,10 +67,10 @@
 
             }
         },
-        "iotcSubdomain": {
+        "iotcAppUrl": {
             "type": "string",
             "metadata": {
-                "description": "The IoTCentral App subdomain"
+                "description": "The IoTCentral App url"
 
             }
         }
@@ -145,6 +159,14 @@
                         "value": "[parameters('mapSubscriptionKey')]"
                     },
                     {
+                        "name": "REACT_APP_MAP_LAT",
+                        "value": "[parameters('mapLatitude')]"
+                    },
+                    {
+                        "name": "REACT_APP_MAP_LON",
+                        "value": "[parameters('mapLongitude')]"
+                    },
+                    {
                         "name": "REACT_APP_MAP_TILESET_ID",
                         "value": "[parameters('mapTilesetId')]"
                     },
@@ -157,8 +179,8 @@
                         "value": "[parameters('iotcApiKey')]"
                     },
                     {
-                        "name": "REACT_APP_IOTC_APP_SUBDOMAIN",
-                        "value": "[parameters('iotcSubdomain')]"
+                        "name": "REACT_APP_IOTC_APP_URL",
+                        "value": "[parameters('iotcAppUrl')]"
                     }
                 ]
             },

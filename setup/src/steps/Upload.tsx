@@ -1,4 +1,9 @@
-import { Icon, mergeStyleSets, ProgressIndicator } from "@fluentui/react";
+import {
+  Icon,
+  mergeStyleSets,
+  ProgressIndicator,
+  TextField,
+} from "@fluentui/react";
 import React, {
   useCallback,
   useContext,
@@ -10,11 +15,10 @@ import React, {
 import { useDropzone } from "react-dropzone";
 import { uploadPackage } from "../api";
 import { DeploymentContext } from "../deploymentContext";
-import { formatBytes, StepElem, StepProps } from "../common";
+import { DrawingUploadData, formatBytes, StepElem, StepProps } from "../common";
 
 const classNames = mergeStyleSets({
   listGrid: {
-    width: "90%",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
@@ -41,20 +45,30 @@ const classNames = mergeStyleSets({
     display: "flex",
     flexDirection: "column",
   },
+  coordinates: {
+    marginTop: 90,
+  },
+  coordinatesForm: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-evenly",
+    paddingHorizontal: 40,
+  },
+  description: {
+    margin: "5%",
+  },
 });
-
-type UploadData = {
-  progress: number;
-  name: string;
-  size: string;
-  uuid?: string;
-};
 
 const Upload = React.memo(
   React.forwardRef<StepElem, StepProps>(({ enableNext }, ref) => {
-    const [items, setItems] = useState<(UploadData | null)[]>([null]);
-    const { mapSubscriptionKey, mapAccountName, store, managementCredentials } =
+    const [coordinates, setCoordinates] = useState<[number, number]>([0, 0]);
+    const { mapSubscriptionKey, mapAccountName, store, drawingUUIDs } =
       useContext(DeploymentContext);
+
+    const [items, setItems] = useState<(DrawingUploadData | null)[]>([
+      ...(drawingUUIDs ?? []),
+      null,
+    ]);
 
     const nextEnabled = useRef(false);
 
@@ -111,9 +125,12 @@ const Upload = React.memo(
       () => ({
         process: () => {
           store({
-            drawingUUIDs: items
-              .filter((i) => i?.uuid)
-              .map((i) => i?.uuid) as string[],
+            drawingUUIDs: items.filter(
+              (i) => i !== null && i.uuid
+            ) as DrawingUploadData[],
+            ...(coordinates[0] !== 0 && coordinates[1] !== 0
+              ? { centerCoordinates: coordinates }
+              : {}),
           });
         },
       }),
@@ -128,12 +145,13 @@ const Upload = React.memo(
     }, [items, enableNext]);
 
     const onRenderCell = React.useCallback(
-      (item: UploadData | null, index) => {
+      (item: DrawingUploadData | null, index) => {
         return (
           <div
             key={`upload-b-${index}`}
-            className={`${classNames.listGridItem} ${item === null ? classNames.clickable : ""
-              }`}
+            className={`${classNames.listGridItem} ${
+              item === null ? classNames.clickable : ""
+            }`}
           >
             {item === null ? (
               <div {...getRootProps()}>
@@ -165,20 +183,63 @@ const Upload = React.memo(
       [getInputProps, getRootProps]
     );
 
-    if (!mapSubscriptionKey || !managementCredentials) {
+    if (!mapSubscriptionKey) {
       return (
         <div className={"centered"}>
-          <ProgressIndicator className="pageload" />
+          <ProgressIndicator
+            className="pageload"
+            description="Loading map details..."
+          />
         </div>
       );
     }
     return (
       <div>
         <h2>Upload building drawings</h2>
-        <p>Map account <h4 style={{ display: 'inline' }}>"{mapAccountName}"</h4> found.</p>
-        <p>Upload your drawings in zip format.<br />
-          For drawing package requirements, follow details <a href='https://docs.microsoft.com/en-us/azure/azure-maps/drawing-requirements'>here</a></p>
+        <div>
+          <h3 style={{ display: "inline" }}>Map account </h3>
+          <h4 style={{ display: "inline" }}> "{mapAccountName}" </h4>
+          <h3 style={{ display: "inline" }}>found.</h3>
+        </div>
+        <div className={classNames.description}>
+          <p>
+            Upload your drawings in zip format.
+            <br />
+            For drawing package requirements, follow details{" "}
+            <a href="https://docs.microsoft.com/en-us/azure/azure-maps/drawing-requirements">
+              here
+            </a>
+          </p>
+        </div>
         <div className={classNames.listGrid}>{items.map(onRenderCell)}</div>
+        <div className={classNames.coordinates}>
+          <p>
+            Optionally provide center coordinates to automatically zoom to
+            specific location at map loading.
+          </p>
+          <div className={classNames.coordinatesForm}>
+            <TextField
+              type="number"
+              label="Latitude"
+              value={coordinates[0].toString()}
+              onChange={(e, val) => {
+                setCoordinates((current) => {
+                  return [parseFloat(val!), current[1]];
+                });
+              }}
+            />
+            <TextField
+              type="number"
+              label="Longitude"
+              value={coordinates[1].toString()}
+              onChange={(e, val) => {
+                setCoordinates((current) => {
+                  return [current[0], parseFloat(val!)];
+                });
+              }}
+            />
+          </div>
+        </div>
       </div>
     );
   })

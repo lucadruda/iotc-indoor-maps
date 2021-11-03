@@ -29,6 +29,7 @@ const Site = React.memo(
       tileSetId,
       statesetId,
       centralDetails,
+      centerCoordinates,
     } = useContext(DeploymentContext);
 
     // const nextEnabled = useRef(false);
@@ -42,10 +43,16 @@ const Site = React.memo(
             resourceGroup,
             {
               iotcApiKey: centralDetails?.apiKey,
-              iotcSubdomain: centralDetails?.appSubdomain,
+              iotcAppUrl: centralDetails?.appUrl,
               mapSubscriptionKey,
               mapTilesetId: tileSetId,
               mapStatesetId: statesetId,
+              mapLatitude: centerCoordinates
+                ? `${centerCoordinates[0]}`
+                : undefined,
+              mapLongitude: centerCoordinates
+                ? `${centerCoordinates[1]}`
+                : undefined,
             }
           )
         );
@@ -55,10 +62,11 @@ const Site = React.memo(
 
     useEffect(() => {
       // if (managementCredentials,subscriptionId) {
-
-      createSite(managementCredentials, subscriptionId, resourceGroup);
+      if (centralDetails) {
+        createSite(managementCredentials, subscriptionId, resourceGroup);
+      }
       // }
-    }, [createSite, managementCredentials, subscriptionId]);
+    }, [centralDetails, createSite, managementCredentials, subscriptionId]);
 
     if (siteUrl) {
       return (
