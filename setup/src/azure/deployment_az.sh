@@ -15,7 +15,7 @@ configurer() {
   for i in "${!confs[@]}"
   do
     search=$i
-    replace=${confs[$i]}
+    replace=`printf '%q' ${confs[$i]}`
 
     sed -i "s/${search}/${replace}/g" "$1"
   done
