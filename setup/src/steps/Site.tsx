@@ -46,6 +46,7 @@ const Site = React.memo(
 
     const createSite = useCallback(
       async () => {
+        store({ siteUrl: undefined })
         setExecuting(true);
         const siteUrl = await createStaticApp(
           managementCredentials!,
@@ -80,7 +81,7 @@ const Site = React.memo(
           <a href={siteUrl}>{siteUrl}</a>
           <span>Would you like to publish your site again?</span>
           <span>Click on the "Re-Publish" button below if your previous attempts failed.</span>
-          <DefaultButton className={classNames.button} text='Restart' onClick={async () => { await createSite(); }} />
+          <DefaultButton className={classNames.button} text='Re-publish' onClick={async () => { await createSite(); }} />
         </div>
       );
     }
