@@ -373,7 +373,6 @@ export async function createStaticApp(
       },
     }
   );
-  debugger;
   if (deployment.id) {
     if (
       deployment.properties?.outputs &&

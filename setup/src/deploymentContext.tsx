@@ -2,11 +2,9 @@
 // Licensed under the MIT License.
 
 import { InteractiveBrowserCredential, TokenCredential } from "@azure/identity";
-import React, { useCallback, useEffect, useState } from "react";
-import { login } from "./api";
+import React, { useCallback, useState } from "react";
 import {
   DeploymentParameters,
-  getCredentialForToken,
   IoTCentralParameters,
   MapParameters,
   useStorage,
@@ -54,13 +52,13 @@ const DeploymentProvider: React.FC<{ children: React.ReactNode }> = ({
     // };
     // return {};
   });
-  const authenticate = useCallback(
-    async (tenantId) => {
-      const client = await login(tenantId);
-      setState((current) => ({ ...current, managementCredentials: client }));
-    },
-    [setState]
-  );
+  // const authenticate = useCallback(
+  //   async (tenantId) => {
+  //     const client = await login(tenantId);
+  //     setState((current) => ({ ...current, managementCredentials: client }));
+  //   },
+  //   [setState]
+  // );
 
   const store = useCallback(
     (data: Partial<IDeploymentState>) => {

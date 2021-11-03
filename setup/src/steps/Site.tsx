@@ -1,6 +1,6 @@
 import { DefaultButton, mergeStyleSets, ProgressIndicator } from "@fluentui/react";
-import React, { useCallback, useContext, useEffect, useState } from "react";
-import { createStaticApp, login } from "../api";
+import React, { useCallback, useContext, useState } from "react";
+import { createStaticApp } from "../api";
 import { DeploymentContext } from "../deploymentContext";
 import { StepElem, StepProps } from "../common";
 
@@ -24,7 +24,7 @@ const classNames = mergeStyleSets({
 const Site = React.memo(
   React.forwardRef<StepElem, StepProps>(() => {
     const [executing, setExecuting] = useState(false);
-    const [text, setText] = useState({
+    const [text] = useState({
       label: "Creating web site",
       description:
         "This might take a while. Please don't close the page until creation is completed.",
@@ -45,11 +45,12 @@ const Site = React.memo(
     // const nextEnabled = useRef(false);
 
     const createSite = useCallback(
-      async (managementCredentials, subscriptionId, resourceGroup) => {
+      async () => {
+        setExecuting(true);
         const siteUrl = await createStaticApp(
-          managementCredentials,
-          subscriptionId,
-          resourceGroup,
+          managementCredentials!,
+          subscriptionId!,
+          resourceGroup!,
           {
             iotcApiKey: centralDetails?.apiKey,
             iotcAppUrl: centralDetails?.appUrl,
@@ -68,7 +69,7 @@ const Site = React.memo(
           store({ siteUrl });
         }
       },
-      [centralDetails, mapSubscriptionKey, tileSetId, statesetId, store]
+      [centralDetails, centerCoordinates, managementCredentials, subscriptionId, resourceGroup, mapSubscriptionKey, tileSetId, statesetId, setExecuting, store]
     );
 
     if (siteUrl) {
@@ -77,6 +78,9 @@ const Site = React.memo(
           <h2>Congratulations!!</h2>
           <h4>Your website is available here:</h4>
           <a href={siteUrl}>{siteUrl}</a>
+          <span>Would you like to publish your site again?</span>
+          <span>Click on the "Re-Publish" button below if your previous attempts failed.</span>
+          <DefaultButton className={classNames.button} text='Restart' onClick={async () => { await createSite(); }} />
         </div>
       );
     }
@@ -90,10 +94,7 @@ const Site = React.memo(
     return (<div className={classNames.container}>
       <span>All required configuration steps are completed.</span>
       <span>Click on the "Publish" button below to start publishing the website which will serve your map.</span>
-      <DefaultButton className={classNames.button} text='Publish' onClick={async () => {
-        setExecuting(true);
-        await createSite(managementCredentials, subscriptionId, resourceGroup);
-      }} />
+      <DefaultButton className={classNames.button} text='Publish' onClick={async () => { await createSite(); }} />
     </div>)
   })
 );

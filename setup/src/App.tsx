@@ -1,4 +1,4 @@
-import { DefaultButton, FontIcon, mergeStyleSets } from "@fluentui/react";
+import { DefaultButton, mergeStyleSets } from "@fluentui/react";
 import React, { useRef, useState } from "react";
 import { StepElem, useSteps } from "./common";
 import Deploy from "./steps/Deploy";

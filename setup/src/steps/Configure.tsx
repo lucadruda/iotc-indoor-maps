@@ -89,13 +89,13 @@ const Configure = React.memo(
           enableNext();
         }
       }
-    }, [drawingUUIDs, mapSubscriptionKey, setText, store, setExecuting]);
+    }, [drawingUUIDs, mapSubscriptionKey, setText, store, setExecuting, enableNext]);
 
     useEffect(() => {
       if (statesetId) {
         enableNext();
       }
-    }, [statesetId]);
+    }, [statesetId, enableNext]);
 
     if (statesetId) {
       // configuration has ended.

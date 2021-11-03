@@ -134,7 +134,7 @@ const Upload = React.memo(
           });
         },
       }),
-      [store, items]
+      [store, items, coordinates]
     );
 
     useEffect(() => {
@@ -149,9 +149,8 @@ const Upload = React.memo(
         return (
           <div
             key={`upload-b-${index}`}
-            className={`${classNames.listGridItem} ${
-              item === null ? classNames.clickable : ""
-            }`}
+            className={`${classNames.listGridItem} ${item === null ? classNames.clickable : ""
+              }`}
           >
             {item === null ? (
               <div {...getRootProps()}>
