@@ -1,21 +1,30 @@
-import { mergeStyleSets, ProgressIndicator } from "@fluentui/react";
+import { DefaultButton, mergeStyleSets, ProgressIndicator } from "@fluentui/react";
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { createStaticApp, login } from "../api";
 import { DeploymentContext } from "../deploymentContext";
 import { SiteParameters, StepElem, StepProps } from "../common";
 
 const classNames = mergeStyleSets({
+  container: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center'
+  },
   content: {
     width: "90%",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
   },
+  button: {
+    margin: 20
+  }
 });
 
 const Site = React.memo(
   React.forwardRef<StepElem, StepProps>(() => {
     const [siteUrl, setSiteUrl] = useState<string | null>(null);
+    const [executing, setExecuting] = useState(false);
     const [text, setText] = useState({
       label: "Creating web site",
       description:
@@ -60,14 +69,6 @@ const Site = React.memo(
       [centralDetails, mapSubscriptionKey, tileSetId, statesetId]
     );
 
-    useEffect(() => {
-      // if (managementCredentials,subscriptionId) {
-      if (centralDetails) {
-        createSite(managementCredentials, subscriptionId, resourceGroup);
-      }
-      // }
-    }, [centralDetails, createSite, managementCredentials, subscriptionId]);
-
     if (siteUrl) {
       return (
         <div className={classNames.content}>
@@ -76,13 +77,22 @@ const Site = React.memo(
           <a href={siteUrl}>{siteUrl}</a>
         </div>
       );
-    } else {
+    }
+    else if (executing) {
       return (
         <div className={classNames.content}>
           <ProgressIndicator {...text} />
         </div>
       );
     }
+    return (<div className={classNames.container}>
+      <span>All required configuration steps are completed.</span>
+      <span>Click on the "Publish" button below to start publishing the website which will serve your map.</span>
+      <DefaultButton className={classNames.button} text='Publish' onClick={async () => {
+        setExecuting(true);
+        await createSite(managementCredentials, subscriptionId, resourceGroup);
+      }} />
+    </div>)
   })
 );
 

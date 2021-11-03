@@ -23,6 +23,7 @@ const classNames = mergeStyleSets({
     flexDirection: "row",
     justifyContent: "space-around",
     marginVertical: 20,
+    width: '80%'
   },
   images: {
     width: "40%",
@@ -31,6 +32,10 @@ const classNames = mergeStyleSets({
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
+  },
+  deployBtn: {
+    marginTop: 10,
+    marginBottom: 10
   },
   form: {
     width: "60%",
@@ -43,6 +48,10 @@ const classNames = mergeStyleSets({
   formItems: {
     width: "100%",
   },
+  clearText: {
+    pointerEvents: 'all',
+    cursor: 'pointer'
+  }
 });
 
 const Deploy = React.memo(
@@ -108,7 +117,9 @@ const Deploy = React.memo(
           target="_blank"
           rel="noreferrer"
         >
-          <img src="https://aka.ms/deploytoazurebutton" alt="Deploy to Azure" />
+          <div className={classNames.deployBtn}>
+            <img src="https://aka.ms/deploytoazurebutton" alt="Deploy to Azure" />
+          </div>
         </a>
         <div className={classNames.imageContainer}>
           <img
@@ -124,6 +135,16 @@ const Deploy = React.memo(
             className={classNames.formItems}
             label="Subscription Id"
             value={data.subscriptionId}
+            required
+            iconProps={{
+              iconName: 'Cancel', onClick: (e) => {
+                setData((current) => ({ ...current, subscriptionId: '' }));
+              },
+              style: {
+                pointerEvents: 'all',
+                cursor: 'pointer'
+              }
+            }}
             onChange={(e, val) => {
               setData((current) => ({ ...current, subscriptionId: val! }));
             }}
@@ -132,8 +153,18 @@ const Deploy = React.memo(
             label="Tenant Id"
             className={classNames.formItems}
             value={data.tenantId}
+            required
             onChange={(e, val) => {
               setData((current) => ({ ...current, tenantId: val! }));
+            }}
+            iconProps={{
+              iconName: 'Cancel', onClick: (e) => {
+                setData((current) => ({ ...current, tenantId: '' }));
+              },
+              style: {
+                pointerEvents: 'all',
+                cursor: 'pointer'
+              }
             }}
           />
           {/* <TextField
@@ -146,12 +177,22 @@ const Deploy = React.memo(
           <TextField
             label="Map Account Name"
             className={classNames.formItems}
+            required
             value={data.mapAccountName}
             onChange={(e, val) => {
               setData((current) => ({
                 ...current,
                 mapAccountName: val!,
               }));
+            }}
+            iconProps={{
+              iconName: 'Cancel', onClick: (e) => {
+                setData((current) => ({ ...current, mapAccountName: '' }));
+              },
+              style: {
+                pointerEvents: 'all',
+                cursor: 'pointer'
+              }
             }}
           />
         </div>

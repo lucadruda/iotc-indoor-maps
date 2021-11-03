@@ -21,3 +21,8 @@ code {
 .pageload {
   width: 200px;
 }
+
+mark{
+  font-weight: bold;
+  background-color: transparent;
+}

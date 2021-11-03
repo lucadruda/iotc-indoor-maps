@@ -35,14 +35,12 @@
         },
         "mapLatitude": {
             "type": "string",
-            "defaultValue": null,
             "metadata": {
                 "description": "The map center latitude"
             }
         },
         "mapLongitude": {
             "type": "string",
-            "defaultValue": null,
             "metadata": {
                 "description": "The map center longitude"
             }

@@ -10,7 +10,7 @@ import React, {
 } from "react";
 import { createCentralApiToken, listCentralApps } from "../api";
 import { DeploymentContext } from "../deploymentContext";
-import { getCredentialForToken, StepElem, StepProps } from "../common";
+import { StepElem, StepProps } from "../common";
 
 const classNames = mergeStyleSets({
   container: {
@@ -38,8 +38,10 @@ const classNames = mergeStyleSets({
     justifyContent: "center",
     border: "1px solid black",
   },
-  clickable: {
+  selected: {
     backgroundColor: "#f3f2f1",
+  },
+  clickable: {
     "&:hover": {
       backgroundColor: "#FFFFFF",
       cursor: "pointer",
@@ -130,11 +132,14 @@ const Central = React.memo(
         return (
           <div
             key={`central-app-${index}`}
-            className={`${classNames.listGridItem} ${
-              selectedApp !== index ? classNames.clickable : ""
-            }`}
+            className={`${classNames.listGridItem} ${classNames.clickable} ${selectedApp === index ? classNames.selected : ''}`}
             onClick={() => {
-              setSelectedApp(index);
+              if (selectedApp === index) {
+                setSelectedApp(null);
+              }
+              else {
+                setSelectedApp(index);
+              }
             }}
           >
             <div>

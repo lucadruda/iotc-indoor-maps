@@ -51,12 +51,12 @@ export async function getMapData(
   credentials: AzureCredentials,
   subscriptionId: string,
   mapAccountName: string
-): Promise<{ mapSubscriptionKey: string; mapLocation: string } | null> {
+): Promise<{ mapSubscriptionKey: string; mapLocation: string,resourceGroupName:string } | null> {
   const client = new AzureMapsManagementClient(credentials, subscriptionId);
   const accounts = await client.accounts.listBySubscription();
   const mapAccount = accounts.find((ac) => (ac as any).name === mapAccountName);
   const regexp = new RegExp(
-    `\/subscriptions\/${subscriptionId}\/resourceGroups\/([\\S]+)\/providers\/Microsoft.Maps\/accounts\/${mapAccountName}`
+    `/subscriptions/${subscriptionId}/resourceGroups/([\\S]+)/providers/Microsoft.Maps/accounts/${mapAccountName}`
   );
   const matches = (mapAccount as any).id.match(regexp);
   if (matches && matches.length === 2) {
@@ -66,7 +66,7 @@ export async function getMapData(
       mapAccountName
     );
     //TODO use real location
-    return { mapSubscriptionKey: keys.primaryKey!, mapLocation: "us" };
+    return { mapSubscriptionKey: keys.primaryKey!, mapLocation: "us",resourceGroupName };
   }
   return null;
 }

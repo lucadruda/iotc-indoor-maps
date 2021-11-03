@@ -1,4 +1,4 @@
-import { mergeStyleSets, ProgressIndicator } from "@fluentui/react";
+import { DefaultButton, mergeStyleSets, ProgressIndicator } from "@fluentui/react";
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import {
   convertPackage,
@@ -10,18 +10,21 @@ import { DeploymentContext } from "../deploymentContext";
 import { StepElem, StepProps } from "../common";
 
 const classNames = mergeStyleSets({
-  content: {
-    width: "90%",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
+  container: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center'
   },
+  button: {
+    margin: 20
+  }
 });
 
 const Configure = React.memo(
   React.forwardRef<StepElem, StepProps>(({ enableNext }, ref) => {
     const [text, setText] = useState({ label: "", description: "" });
-    const { drawingUUIDs, mapSubscriptionKey, statesetId, store } =
+    const [executing, setExecuting] = useState(false);
+    const { drawingUUIDs, mapSubscriptionKey, mapAccountName, statesetId, store } =
       useContext(DeploymentContext);
 
     const execute = useCallback(async () => {
@@ -29,14 +32,7 @@ const Configure = React.memo(
         return;
       }
       const convIds: string[] = [];
-      if (statesetId) {
-        setText({
-          label: `State set created.`,
-          description: statesetId ?? "",
-        });
-        enableNext();
-        return;
-      }
+      setExecuting(true);
       for (const drawingUUID of drawingUUIDs) {
         setText({
           label: `Converting packages. Please wait...`,
@@ -93,20 +89,38 @@ const Configure = React.memo(
           enableNext();
         }
       }
-    }, [drawingUUIDs, mapSubscriptionKey, setText, store]);
+    }, [drawingUUIDs, mapSubscriptionKey, setText, store, setExecuting]);
 
     useEffect(() => {
-      execute();
-    }, [execute]);
+      if (statesetId) {
+        enableNext();
+      }
+    }, [statesetId]);
 
-    return (
-      <div className={classNames.content}>
-        <ProgressIndicator
-          {...text}
-          percentComplete={statesetId ? 1 : undefined}
-        />
-      </div>
-    );
+    if (statesetId) {
+      // configuration has ended.
+      return (<div className={classNames.container}>
+        <span>You already have configure your map account <mark>{mapAccountName}</mark>.</span>
+        <span>Click on the "Restart" button if you want to start another conversion, otherwise click "Next" to continue the setup.</span>
+        <DefaultButton className={classNames.button} text='Restart' onClick={execute} />
+      </div>)
+    }
+    else if (executing) {
+      return (
+        <div className={classNames.container}>
+          <ProgressIndicator
+            {...text}
+            percentComplete={statesetId ? 1 : undefined}
+          />
+        </div>
+      );
+    }
+    return (<div className={classNames.container}>
+      <h4>You have uploaded {drawingUUIDs?.length} drawings.</h4>
+      <span>The packages now need to be converted and assign to a dataset. <br />Click on the <mark>"Start"</mark> button below to start the process.</span>
+      <span>This may take several minutes. Please do not close this page until all required steps are completed.</span>
+      <DefaultButton className={classNames.button} text='Start' onClick={execute} />
+    </div>)
   })
 );
 

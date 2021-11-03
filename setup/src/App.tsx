@@ -13,12 +13,16 @@ const styles = {
     display: "flex",
     justifyContent: "center",
     textAlign: "center",
+    alignItems: 'center',
+    flexDirection: 'column'
   },
   footer: {
-    position: "absolute",
-    bottom: "5%",
+    marginBottom: 10,
+    display: 'flex',
+    alignItems: 'center',
     justifyContent: "space-between",
-    width: "70%",
+    width: "80%",
+    marginTop: 10
   },
   arrow: {
     alignItems: "center",
@@ -29,6 +33,16 @@ const styles = {
   icon: {
     cursor: "pointer",
   },
+  content: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyConten: 'center',
+    textAlign: 'center',
+    alignItems: 'center',
+    overflowY: 'auto',
+    height: '90%',
+    justifyContent: 'center'
+  }
 };
 
 const classNames = mergeStyleSets(styles);
@@ -83,21 +97,22 @@ export function Wizard() {
 
   return (
     <div className={classNames.wizardBody}>
-      {renderComponent(current)}
+      <div className={classNames.content}>
+        {renderComponent(current)}
+      </div>
       <div className={classNames.footer}>
         <DefaultButton
           primary
           text="Previous"
           iconProps={{ iconName: "Back" }}
           onClick={previous}
-          style={current === 0 ? { display: "none" } : { float: "left" }}
+          style={current === 0 ? { visibility: "hidden" } : {}}
         />
         <DefaultButton
           primary
           text="Next"
           iconProps={{ iconName: "Forward" }}
           disabled={current === totalSteps - 1 || !nextEnabled}
-          style={{ float: "right" }}
           onClick={() => {
             compRef[current].current?.process();
             next();
