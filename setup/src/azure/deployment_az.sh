@@ -11,7 +11,7 @@ confs=(
 
 sanitize() {
   INPUT="$1"
-  RET=$(echo "$INPUT" | sed "s/\&/\\\&/g")
+  RET=$(echo "$INPUT" | sed "s/\&/\\\&/g" | sed "s/\./\\\./g")
   echo "$RET"
 }
 
