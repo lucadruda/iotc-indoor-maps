@@ -9,14 +9,18 @@ confs=(
   [__REACT_APP_IOTC_APP_URL__]="\"$REACT_APP_IOTC_APP_URL\""
 )
 
+sanitize() {
+  INPUT="$1"
+  RET=$(echo "$INPUT" | sed "s/\&/\\\&/g")
+  echo "$RET"
+}
+
 configurer() {
   # Loop through the conf array
   cp "$1" "$1.bak"
-  for i in "${!confs[@]}"
-  do
+  for i in "${!confs[@]}"; do
     search=$i
-    replace=`printf '%q' ${confs[$i]}`
-
+    replace=$(sanitize "${confs[$i]}")
     sed -i "s/${search}/${replace}/g" "$1"
   done
 }
@@ -26,9 +30,8 @@ git clone "$GIT_REPO"
 
 cd ${GIT_REPO##*/}
 
-if [[ ! -z $GIT_BRANCH ]]
-then
-    git checkout "$GIT_BRANCH"
+if [[ ! -z $GIT_BRANCH ]]; then
+  git checkout "$GIT_BRANCH"
 fi
 
 cd "$SITE_FOLDER"
@@ -38,9 +41,8 @@ configurer build/index.html
 az login --identity
 
 # output account info
-az storage account show -g "$RESOURCE_GROUP_NAME" -n "$STORAGE_ACCOUNT_NAME" > "$AZ_SCRIPTS_OUTPUT_PATH"
+az storage account show -g "$RESOURCE_GROUP_NAME" -n "$STORAGE_ACCOUNT_NAME" >"$AZ_SCRIPTS_OUTPUT_PATH"
 
 # use "--auth-mode key" to leverage authentication with current credentials provided by managed identity
 az storage blob service-properties update --auth-mode key --account-name "$STORAGE_ACCOUNT_NAME" --static-website --404-document error.html --index-document index.html
 az storage blob upload-batch --auth-mode key --account-name "$STORAGE_ACCOUNT_NAME" -d "\$web" -s build
-
