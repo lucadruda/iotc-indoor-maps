@@ -21,7 +21,7 @@ configurer() {
   for i in "${!confs[@]}"; do
     search=$i
     replace=$(sanitize "${confs[$i]}")
-    sed -i "s/${search}/${replace}/g" "$1"
+    perl -i -pe"s/${search}/${replace}/g" "$1"
   done
 }
 
