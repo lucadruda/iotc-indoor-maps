@@ -20,9 +20,7 @@ configurer() {
   cp "$1" "$1.bak"
   for i in "${!confs[@]}"; do
     search="$i"
-    echo "$search"
     replace=$(sanitize "${confs[$i]}")
-    echo "$replace"
     perl -i -pe"s/${search}/${replace}/g" "$1"
   done
 }
