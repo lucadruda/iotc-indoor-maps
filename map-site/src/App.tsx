@@ -21,6 +21,7 @@ import {
   MAP_TILESET_ID,
   MAP_LON,
   MAP_LAT,
+  FEATURE_MAP,
 } from "./common";
 import TvIcon from "./icons/tv.png";
 import ThermostatIcon from "./icons/thermostat.png";
@@ -100,13 +101,13 @@ const App = React.memo(() => {
     await Promise.all(devs.thermostats.map(async (thm) => {
       const newState = await getTelemetryValue(thm.id, 'temperature');
       if (newState) {
-        await setFeatureState(thm.properties?.room, 'temperature', newState);
+        await setFeatureState(`UNIT${FEATURE_MAP[thm.properties?.room as keyof typeof FEATURE_MAP]}`, 'temperature', newState);
       }
     }));
     await Promise.all(devs.tv.map(async (tv) => {
       const newState = await getTelemetryValue(tv.id, 'powerState');
       if (newState) {
-        await setFeatureState(tv.properties?.room, 'powerState', newState);
+        await setFeatureState(`UNIT${FEATURE_MAP[tv.properties?.room as keyof typeof FEATURE_MAP]}`, 'powerState', newState);
       }
     }));
     if (isEqual(devs, devices)) {
@@ -166,7 +167,7 @@ const App = React.memo(() => {
 
   useEffect(() => {
     refresh();
-    const inId = setInterval(refresh, 8000);
+    const inId = setInterval(refresh, 10000);
     return () => clearInterval(inId);
   }, [refresh]);
 
