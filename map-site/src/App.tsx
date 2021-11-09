@@ -35,10 +35,7 @@ const mapId = "map-id";
 const App = React.memo(() => {
   const { state: cardState, open: openCard } = useCard();
   const [devices, setDevices] = useState({});
-  const { current: tvDataSource } = useRef<atlas.source.DataSource>(
-    new atlas.source.DataSource()
-  );
-  const { current: thermostatDataSource } = useRef<atlas.source.DataSource>(
+  const { current: deviceDataSource } = useRef<atlas.source.DataSource>(
     new atlas.source.DataSource()
   );
   const [features, setFeatures] = useState<any[]>([]);
@@ -76,21 +73,22 @@ const App = React.memo(() => {
   const onMouseOver = useCallback(
     (map, event, layer) => {
       const features = map.layers.getRenderedShapes(event.position, layer);
-      features.forEach((feature: any) => {
-        const template =
-          feature.dataSource.id === tvDataSource.getId() ? "tv" : "thermostat";
-        openCard(
-          feature.data.properties.featureId,
-          { ...feature.data, template },
-          [
-            atlas.Pixel.getX(event.pixel!) - 10,
-            atlas.Pixel.getY(event.pixel!) - 10,
-          ]
-        );
-        popupRef.current?.focus();
-      });
+      console.log(features);
+      // features.forEach((feature: any) => {
+      //   const template =
+      //     feature.dataSource.id === tvDataSource.getId() ? "tv" : "thermostat";
+      //   openCard(
+      //     feature.data.properties.featureId,
+      //     { ...feature.data, template },
+      //     [
+      //       atlas.Pixel.getX(event.pixel!) - 10,
+      //       atlas.Pixel.getY(event.pixel!) - 10,
+      //     ]
+      //   );
+      //   popupRef.current?.focus();
+      // });
     },
-    [openCard, tvDataSource]
+    [openCard]
   );
 
   const refresh = useCallback(async () => {
@@ -217,57 +215,35 @@ const App = React.memo(() => {
         });
       });
 
-      await indoorMap.imageSprite.add("tv-icon", TvIcon);
-      await indoorMap.imageSprite.add("thermostat-icon", ThermostatIcon);
-      indoorMap.sources.add(tvDataSource);
-      indoorMap.sources.add(thermostatDataSource);
+      // await indoorMap.imageSprite.add("tv-icon", TvIcon);
+      // await indoorMap.imageSprite.add("thermostat-icon", ThermostatIcon);
+      // indoorMap.sources.add(tvDataSource);
+      // indoorMap.sources.add(thermostatDataSource);
+      indoorMap.sources.add(deviceDataSource);
 
-      const tvsLayer = new atlas.layer.SymbolLayer(tvDataSource, undefined, {
-        minZoom: 19,
-        iconOptions: {
-          //Pass in the id of the custom icon that was loaded into the map resources.
-          image: "tv-icon",
-
-          //Optionally scale the size of the icon.
-          size: 0.2,
-        },
+      const deviceLayer = new atlas.layer.SymbolLayer(deviceDataSource, undefined, {
+        minZoom: 19
       });
 
-      const thmsLayer = new atlas.layer.SymbolLayer(
-        thermostatDataSource,
-        undefined,
-        {
-          minZoom: 19,
-          iconOptions: {
-            //Pass in the id of the custom icon that was loaded into the map resources.
-            image: "thermostat-icon",
 
-            //Optionally scale the size of the icon.
-            size: 0.2,
-          },
-        }
-      );
-
-      indoorMap.layers.add(tvsLayer);
-      indoorMap.layers.add(thmsLayer);
-      indoorMap.events.add("mouseover", tvsLayer, (e) =>
-        onMouseOver(indoorMap, e, tvsLayer)
-      );
-      indoorMap.events.add("mouseover", thmsLayer, (e) =>
-        onMouseOver(indoorMap, e, thmsLayer)
+      indoorMap.layers.add(deviceLayer);
+      indoorMap.events.add("mouseover", deviceLayer, (e) =>
+        onMouseOver(indoorMap, e, deviceLayer)
       );
 
       /** Initialize features */
       indoorMap.events.add("load", (e) => {
         try {
-          setFeatures(indoorMap.layers.getRenderedShapes(undefined, "unit"));
+          const features=indoorMap.layers.getRenderedShapes(undefined, "unit");
+          console.log(features);
+          setFeatures(features);
         } catch (ex) {
           console.log(ex);
         }
       });
     });
 
-  }, [setFeatures, onMouseOver, tvDataSource, thermostatDataSource]);
+  }, [setFeatures, onMouseOver,deviceDataSource]);
 
   const onRenderExpandedCard = useCallback(
     (): JSX.Element => (
